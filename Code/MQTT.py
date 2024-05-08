@@ -1,7 +1,7 @@
 import time
 import paho.mqtt.client as mqtt
 import json
-
+import random
 # First let's handle the UltraSonicSensor data example
 from car_utilities.ADC import *
 adc = Adc()
@@ -71,6 +71,7 @@ while True:
 
     try:
         print("Getting speed")
+        motor.setMotorModel(random.randint(-1450, 1450), random.randint(-1450, 1450), random.randint(-1450, 1450), random.randint(-1450, 1450))
         print(motor.getSpeed())
         motor_data = {
             "Speed": motor.getSpeed(),
