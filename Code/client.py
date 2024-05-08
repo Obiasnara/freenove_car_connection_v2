@@ -23,10 +23,17 @@ def start_tcp_client(ip, port):
     Open a new client socket and try to connect to the given ip and port
     Return the connection
     """
+    print(f'Connecting to {ip}:{port}...')
     client = socket.socket()
-    client.connect((ip, port))
-    print(f'Connected to {ip}:{port}')
-    return client
+    try :
+        client.connect((ip, port))
+        print(f'Connected to {ip}:{port}')
+        return client
+    except Exception as e:
+        print(f'Connection to {ip}:{port} failed')
+        print(e)
+        return None
+    
 
 
 class Client:

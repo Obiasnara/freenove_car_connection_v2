@@ -27,6 +27,7 @@ def internal_server_error(error):
 
 @app.route('/connect/<string:ip>')
 async def connect(ip):
+    print(f'Connecting to {ip}...')
     for client_registered in clients:
         if ip == client_registered.server_ip:
             return jsonify({
@@ -34,8 +35,11 @@ async def connect(ip):
                 "client_index": clients.index(client_registered) + 1
             })
     try:
+        print(f'Connecting to {ip}...')
         client = Client(ip)
+        print(f'Client {ip} connected')
         clients.append(client)
+        print(f'Clients: {clients}')
         return jsonify({
             "message": "Client connection successful",
             "client_index": len(clients)

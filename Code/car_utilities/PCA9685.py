@@ -67,6 +67,9 @@ class PCA9685:
     def setMotorPwm(self, channel, duty):
         self.setPWM(channel, 0, duty)
 
+    def getMotorPwm(self, channel):
+        return self.read(self.__LED0_OFF_L + 4 * channel)
+
     def setServoPulse(self, channel, pulse):
         "Sets the Servo Pulse,The PWM frequency must be 50HZ"
         pulse = pulse * 4096 / 20000  # PWM frequency is 50HZ,the period is 20000us
