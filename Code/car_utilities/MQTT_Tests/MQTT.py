@@ -1,6 +1,11 @@
 import time
 import paho.mqtt.client as mqtt
 import json
+
+# First let's handle the UltraSonicSensor data example
+from Ultrasonic import *
+ultrasonic = Ultrasonic()
+
 def on_publish(client, userdata, mid, reason_code, properties):
     # reason_code and properties will only be present in MQTTv5. It's always unset in MQTTv3
     try:
@@ -31,7 +36,7 @@ while True:
     # Our application produce some messages
     # Create the json object
     ultrasonic_data = {
-        "distance": i, #ultrasonic.get_distance(),
+        "distance": ultrasonic.get_distance(),
         "time": time.time()
     }
     msg_info = mqttc.publish("UltraSonicSensor", json.dumps(ultrasonic_data), qos=1)
