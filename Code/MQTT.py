@@ -57,7 +57,7 @@ while True:
 
     try:
         ultrasonic_data = {
-            "Distance": ultrasonic.distance(),
+            "Distance": ultrasonic.get_distance(),
             "time": time.time()
         }
     except:
@@ -70,6 +70,8 @@ while True:
     unacked_publish.add(msg_info.mid)
 
     try:
+        print("Getting speed")
+        print(motor.getSpeed())
         motor_data = {
             "Speed": motor.getSpeed(),
             "time": time.time()
