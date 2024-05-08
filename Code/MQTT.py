@@ -5,6 +5,12 @@ import json
 # First let's handle the UltraSonicSensor data example
 from car_utilities.ADC import *
 adc = Adc()
+from car_utilities.Ultrasonic import *
+ultrasonic = Ultrasonic()
+from car_utilities.Motor import *
+motor = Motor()
+from picamera2 import Picamera2
+camera = Picamera2()
 
 def on_publish(client, userdata, mid, reason_code, properties):
     # reason_code and properties will only be present in MQTTv5. It's always unset in MQTTv3
@@ -35,11 +41,60 @@ i=0;
 while True:
     # Our application produce some messages
     # Create the json object
-    ultrasonic_data = {
-        "Battery%": ((adc.recvADC(2) * 3) - 7) / 1.40 * 100,
-        "time": time.time()
-    }
-    msg_info = mqttc.publish("UltraSonicSensor", json.dumps(ultrasonic_data), qos=1)
+    try :
+        battery_data = {
+            "BatteryVoltage": adc.recvADC(2) * 3,
+            "time": time.time()
+        }
+    except:
+        print("Error reading battery data")
+        battery_data = {
+            "BatteryVoltage": 0,
+            "time": time.time()
+        }
+    msg_info = mqttc.publish("Battery", json.dumps(battery_data), qos=1)
+    unacked_publish.add(msg_info.mid)
+
+    try:
+        ultrasonic_data = {
+            "Distance": ultrasonic.distance(),
+            "time": time.time()
+        }
+    except:
+        print("Error reading ultrasonic data")
+        ultrasonic_data = {
+            "Distance": 0,
+            "time": time.time()
+        }
+    msg_info = mqttc.publish("Ultrasonic", json.dumps(ultrasonic_data), qos=1)
+    unacked_publish.add(msg_info.mid)
+
+    try:
+        motor_data = {
+            "Speed": motor.getSpeed(),
+            "time": time.time()
+        }
+    except:
+        print("Error reading motor data")
+        motor_data = {
+            "Speed": [0, 0, 0, 0],
+            "time": time.time()
+        }
+    msg_info = mqttc.publish("Motor", json.dumps(motor_data), qos=1)
+    unacked_publish.add(msg_info.mid)
+
+    try:
+        camera_data = {
+            "Image": 0,
+            "time": time.time()
+        }
+    except:
+        print("Error reading camera data")
+        camera_data = {
+            "Image": None,
+            "time": time.time()
+        }
+    msg_info = mqttc.publish("Camera", json.dumps(camera_data), qos=1)
     unacked_publish.add(msg_info.mid)
 
     # Wait for all message to be published
