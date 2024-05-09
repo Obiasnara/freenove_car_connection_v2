@@ -48,6 +48,7 @@ class MQTTHandler:
         try:
             msg_info = self.client.publish(topic, json.dumps(data), qos=self.qos)
             self.unacked_publish.add(msg_info.mid)
+            self.wait_for_publish()
         except Exception as e:
             print(f"Error publishing data to topic {topic}: {e}")
 
