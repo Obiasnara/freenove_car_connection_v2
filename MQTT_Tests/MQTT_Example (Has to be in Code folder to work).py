@@ -71,7 +71,7 @@ while True:
 
     try:
         print("Getting speed")
-        motor.setMotorModel(random.randint(-1450, 1450), random.randint(-1450, 1450), random.randint(-1450, 1450), random.randint(-1450, 1450))
+        #motor.setMotorModel(random.randint(-1450, 1450), random.randint(-1450, 1450), random.randint(-1450, 1450), random.randint(-1450, 1450))
         print(motor.getSpeed())
         motor_data = {
             "Speed": motor.getSpeed(),

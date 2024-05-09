@@ -88,6 +88,9 @@ class Motor:
         self.right_Upper_Wheel(duty3)
         self.right_Lower_Wheel(duty4)
 
+    def getMotorModel(self):
+        return self.FrontRightWheelDuty, self.FrontLeftWheelDuty, self.BackRightWheelDuty, self.BackLeftWheelDuty
+
     def getSpeed(self):
         return self.FrontRightWheelDuty, self.FrontLeftWheelDuty, self.BackRightWheelDuty, self.BackLeftWheelDuty
 
