@@ -1,6 +1,5 @@
 import InitPythonPath
-import threading
-import json
+
 from MQTT_Handler import MQTTHandler
 from MQTT_Motor_Module import Motor
 
