@@ -12,6 +12,7 @@ def loop():
         pass
 
 def destroy():
+    motor.setMotorModel(0, 0, 0, 0)
     motor.mqtt_handler.stop()
 
 if __name__ == '__main__':
