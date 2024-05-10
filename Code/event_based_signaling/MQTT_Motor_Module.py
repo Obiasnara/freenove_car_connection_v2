@@ -1,8 +1,7 @@
 from car_utilities.PCA9685 import *
-from MQTT_Handler import MQTTHandler
 
 class Motor:
-    def __init__(self):
+    def __init__(self, mqtt_handler):
         self.pwm = PCA9685(0x40, debug=True)
         self.pwm.setPWMFreq(50)
 
@@ -10,9 +9,8 @@ class Motor:
         self.FrontLeftWheelDuty = 0
         self.BackRightWheelDuty = 0
         self.BackLeftWheelDuty = 0
-        MQTT_BROKER_ADDRESS = "157.245.38.231"
         # We need to create a MQTTHandler object to subscribe to the topic "MotorProducer"
-        self.mqtt_handler = MQTTHandler(MQTT_BROKER_ADDRESS, client_id="car_motor_module")
+        self.mqtt_handler = mqtt_handler
         self.mqtt_handler.subscribe("MotorProducer")        
         self.mqtt_handler.client.on_message = self.on_message
 
@@ -25,7 +23,6 @@ class Motor:
             duty1 = 4095
         elif duty1 < -4095:
             duty1 = -4095
-
         if duty2 > 4095:
             duty2 = 4095
         elif duty2 < -4095:

@@ -1,11 +1,14 @@
 import InitPythonPath
 import threading
 import json
+from MQTT_Handler import MQTTHandler
+
 from MQTT_Motor_Module import Motor
 
 def loop():
-    motor = Motor()
-    
+    MQTT_BROKER_ADDRESS = "157.245.38.231"
+    mqtt_handler = MQTTHandler(MQTT_BROKER_ADDRESS, client_id="car_motor_module")
+    motor = Motor(mqtt_handler)
     while True:
         pass
 
