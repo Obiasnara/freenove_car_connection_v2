@@ -17,6 +17,11 @@ class Motor:
 
     def on_message(self, client, userdata, message):
         data = json.loads(message.payload)
+        # PArse to int 
+        data["LeftUpperMotorSpeed"] = int(data["LeftUpperMotorSpeed"])
+        data["RightUpperMotorSpeed"] = int(data["RightUpperMotorSpeed"])
+        data["LeftLowerMotorSpeed"] = int(data["LeftLowerMotorSpeed"])
+        data["RightLowerMotorSpeed"] = int(data["RightLowerMotorSpeed"])
         self.setMotorModel(data["LeftUpperMotorSpeed"], data["RightUpperMotorSpeed"], data["LeftLowerMotorSpeed"], data["RightLowerMotorSpeed"])
 
     def duty_range(self, duty1, duty2, duty3, duty4):
