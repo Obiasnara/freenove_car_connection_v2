@@ -104,29 +104,3 @@ class Motor:
 
     def getMotorModel(self):
         return self.FrontRightWheelDuty, self.FrontLeftWheelDuty, self.BackRightWheelDuty, self.BackLeftWheelDuty
-
-
-PWM = Motor()
-
-
-def loop():
-    PWM.setMotorModel(2000, 2000, 2000, 2000)  # Forward
-    time.sleep(3)
-    PWM.setMotorModel(-2000, -2000, -2000, -2000)  # Back
-    time.sleep(3)
-    PWM.setMotorModel(-500, -500, 2000, 2000)  # Left
-    time.sleep(3)
-    PWM.setMotorModel(2000, 2000, -500, -500)  # Right
-    time.sleep(3)
-    PWM.setMotorModel(0, 0, 0, 0)  # Stop
-
-
-def destroy():
-    PWM.setMotorModel(0, 0, 0, 0)
-
-
-if __name__ == '__main__':
-    try:
-        loop()
-    except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the child program destroy() will be  executed.
-        destroy()
