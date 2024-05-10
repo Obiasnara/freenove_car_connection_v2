@@ -20,7 +20,7 @@ class Motor:
         self.mqtt_handler = mqtt_handler
         self.mqtt_handler.subscribe("MotorProducer")        
         self.mqtt_handler.client.on_message = self.on_message
-        
+
         self.mqtt_handler.publish("MotorClient", self.getMessage())
         self.mqtt_handler.wait_for_publish()
 
@@ -104,6 +104,7 @@ class Motor:
         self.left_Lower_Wheel(duty2)
         self.right_Upper_Wheel(duty3)
         self.right_Lower_Wheel(duty4)
+        print("New duty cycle: ", duty1, duty2, duty3, duty4)
         self.mqtt_handler.publish("MotorClient", self.getMessage())
         self.mqtt_handler.wait_for_publish()
 
