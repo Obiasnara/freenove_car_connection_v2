@@ -15,8 +15,8 @@ class Motor:
         self.comm_handler = comm_handler
         self.comm_handler.subscribe("Submodel1_Operation2")        
         self.comm_handler.client.on_message = self.on_message
-
-        self.comm_handler.publish("test_state", self.getMessage())
+        self.sender = "test_state"
+        self.comm_handler.publish(self.sender, self.getMessage())
         self.comm_handler.wait_for_publish()
 
     def on_message(self, client, userdata, message):
@@ -105,7 +105,7 @@ class Motor:
         self.right_Upper_Wheel(duty3)
         self.right_Lower_Wheel(duty4)
         print("New duty cycle: ", duty1, duty2, duty3, duty4)
-        self.comm_handler.publish("MotorClient", self.getMessage())
+        self.comm_handler.publish(self.sender, self.getMessage())
         self.comm_handler.wait_for_publish()
 
     def getMessage(self):
