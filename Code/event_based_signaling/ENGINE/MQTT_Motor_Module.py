@@ -13,10 +13,10 @@ class Motor:
         
         # We need to create a MQTTHandler object to subscribe to the topic "MotorProducer"
         self.comm_handler = comm_handler
-        self.comm_handler.subscribe("MotorProducer")        
+        self.comm_handler.subscribe("Submodel1_Operation2")        
         self.comm_handler.client.on_message = self.on_message
 
-        self.comm_handler.publish("MotorClient", self.getMessage())
+        self.comm_handler.publish("test_state", self.getMessage())
         self.comm_handler.wait_for_publish()
 
     def on_message(self, client, userdata, message):
