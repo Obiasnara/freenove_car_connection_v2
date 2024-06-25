@@ -20,6 +20,7 @@ class Motor:
         self.comm_handler.wait_for_publish()
 
     def on_message(self, client, userdata, message):
+        print(f"Received message '{message.payload.decode()}' on topic '{message.topic}'")
         data = json.loads(message.payload)
         action = {
         "Submodel1_Operation2": lambda: self.left_Upper_Wheel(data),
