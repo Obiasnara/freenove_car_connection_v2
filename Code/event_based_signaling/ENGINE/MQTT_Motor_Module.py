@@ -21,9 +21,10 @@ class Motor:
 
     def on_message(self, client, userdata, message):
         print(f"Received message '{message.payload.decode()}' on topic '{message.topic}'")
-        data = json.loads(message.payload)
+        # Weel1_Weel2_Weel3_Weel4
+        string_message = message.payload.decode().split("_")
         action = {
-        "Submodel1_Operation2": lambda: self.left_Upper_Wheel(data),
+        "Submodel1_Operation2": lambda: self.setMotorModel(int(string_message[0]), int(string_message[1]), int(string_message[2]), int(string_message[3]))
         }
         action[message.topic]()
         
