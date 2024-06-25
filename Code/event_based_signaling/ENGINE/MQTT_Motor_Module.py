@@ -2,7 +2,7 @@ from car_utilities.PCA9685 import *
 import json
 
 class Motor:
-    def __init__(self, mqtt_handler):
+    def __init__(self, comm_handler):
         self.pwm = PCA9685(0x40, debug=True)
         self.pwm.setPWMFreq(50)
 
@@ -10,24 +10,22 @@ class Motor:
         self.FrontLeftWheelDuty = 0
         self.BackRightWheelDuty = 0
         self.BackLeftWheelDuty = 0
-        data = {
-            "LeftUpperMotorSpeed": 0,
-            "RightUpperMotorSpeed": 0,
-            "LeftLowerMotorSpeed": 0,
-            "RightLowerMotorSpeed": 0
-        }
+        
         # We need to create a MQTTHandler object to subscribe to the topic "MotorProducer"
-        self.mqtt_handler = mqtt_handler
-        self.mqtt_handler.subscribe("MotorProducer")        
-        self.mqtt_handler.client.on_message = self.on_message
+        self.comm_handler = comm_handler
+        self.comm_handler.subscribe("MotorProducer")        
+        self.comm_handler.client.on_message = self.on_message
 
-        self.mqtt_handler.publish("MotorClient", self.getMessage())
-        self.mqtt_handler.wait_for_publish()
+        self.comm_handler.publish("MotorClient", self.getMessage())
+        self.comm_handler.wait_for_publish()
 
     def on_message(self, client, userdata, message):
         data = json.loads(message.payload)
-        print(data)
-        self.setMotorModel(data["LeftUpperMotorSpeed"], data["RightUpperMotorSpeed"], data["LeftLowerMotorSpeed"], data["RightLowerMotorSpeed"])
+        action = {
+        "Submodel1_Operation2": lambda: self.left_Upper_Wheel(data),
+        }
+        action[message.topic]()
+        
 
     def duty_range(self, duty1, duty2, duty3, duty4):
         if duty1 > 4095:
@@ -105,8 +103,8 @@ class Motor:
         self.right_Upper_Wheel(duty3)
         self.right_Lower_Wheel(duty4)
         print("New duty cycle: ", duty1, duty2, duty3, duty4)
-        self.mqtt_handler.publish("MotorClient", self.getMessage())
-        self.mqtt_handler.wait_for_publish()
+        self.comm_handler.publish("MotorClient", self.getMessage())
+        self.comm_handler.wait_for_publish()
 
     def getMessage(self):
         data = {
