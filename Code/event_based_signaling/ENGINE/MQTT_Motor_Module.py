@@ -109,12 +109,7 @@ class Motor:
         self.comm_handler.wait_for_publish()
 
     def getMessage(self):
-        data = {
-            "LeftUpperMotorSpeed": self.FrontLeftWheelDuty,
-            "RightUpperMotorSpeed": self.FrontRightWheelDuty,
-            "LeftLowerMotorSpeed": self.BackLeftWheelDuty,
-            "RightLowerMotorSpeed": self.BackRightWheelDuty
-        }
+        data = self.FrontLeftWheelDuty + "_" + self.FrontRightWheelDuty + "_" + self.BackLeftWheelDuty + "_" + self.BackRightWheelDuty
         return data
 
     def getMotorModel(self):
