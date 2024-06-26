@@ -1,4 +1,4 @@
-import Init.InitPythonPath as InitPythonPath
+import InitPythonPath as InitPythonPath
 
 from Handlers.MQTT_Handler import MQTTHandler
 from ENGINE.MQTT_Motor_Module import Motor
