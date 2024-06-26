@@ -55,12 +55,14 @@ class Ultrasonic(MQTT_Module_Interface):
 
     def get_distance(self):  # get the measurement results of ultrasonic module,with unit: cm
         distance_cm = [0, 0, 0, 0, 0]
+        print("Getting distance")
         for i in range(5):
             GPIO.output(self.trigger_pin, GPIO.HIGH)  # make trigger_pin output 10us HIGH level
             time.sleep(0.00001)  # 10us
             GPIO.output(self.trigger_pin, GPIO.LOW)  # make trigger_pin output LOW level
             pingTime = self.pulseIn(self.echo_pin, GPIO.HIGH, self.timeOut)  # read plus time of echo_pin
             distance_cm[i] = pingTime * 340.0 / 2.0 / 10000.0  # calculate distance with sound speed 340m/s
+            print("Distance "+ i + " : " + pingTime * 340.0 / 2.0 / 10000.0)
         distance_cm = sorted(distance_cm)
         print(distance_cm)
         return int(distance_cm[2])
