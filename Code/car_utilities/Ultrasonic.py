@@ -1,8 +1,7 @@
 import RPi.GPIO as GPIO
 
-from Motor import *
-from servo import *
-
+from .Motor import *
+from .servo import *
 
 class Ultrasonic:
     def __init__(self):
