@@ -69,30 +69,39 @@ class Ultrasonic:
             time.sleep(0.2)
             if i == 30:
                 L = self.get_distance()
+                print("L: ", L)
             elif i == 90:
                 M = self.get_distance()
+                print("M: ", M)
             else:
                 R = self.get_distance()
+                print("R: ", R)
         while True:
             for i in range(90, 30, -60):
                 self.pwm_S.setServoPwm('0', i)
                 time.sleep(0.2)
                 if i == 30:
                     L = self.get_distance()
+                    print("L: ", L)
                 elif i == 90:
                     M = self.get_distance()
+                    print("M: ", M)
                 else:
                     R = self.get_distance()
+                    print("R: ", R)
                 self.run_motor(L, M, R)
             for i in range(30, 151, 60):
                 self.pwm_S.setServoPwm('0', i)
                 time.sleep(0.2)
                 if i == 30:
                     L = self.get_distance()
+                    print("L: ", L)
                 elif i == 90:
                     M = self.get_distance()
+                    print("M: ", M)
                 else:
                     R = self.get_distance()
+                    print("R: ", R)
                 self.run_motor(L, M, R)
 
 

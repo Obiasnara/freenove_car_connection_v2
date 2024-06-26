@@ -26,9 +26,9 @@ class Ultrasonic(MQTT_Module_Interface):
             while True:
                 distance = self.get_distance()  # Get distance using your existing function
                 print(distance)
-                
-                self.distance_temp = distance
-                self.comm_handler.publish(self.sender, str(distance))
+                if distance != self.distance_temp:
+                    self.distance_temp = distance
+                    self.comm_handler.publish(self.sender, str(distance))
                 time.sleep(1)  # Sleep only within this thread
         message_loop()  # Call the function
         #thread = threading.Thread(target=message_loop)  
