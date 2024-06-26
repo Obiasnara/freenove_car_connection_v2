@@ -17,9 +17,8 @@ class Ultrasonic(MQTT_Module_Interface):
         # We need to create a MQTTHandler object to subscribe to the topic "MotorProducer"
         self.comm_handler = comm_handler
         self.sender = "Submodel1_Operation4"
-        self.getMessage()
-
         self.distance_temp = 0
+        self.getMessage()
 
     def getMessage(self):
         while True:
