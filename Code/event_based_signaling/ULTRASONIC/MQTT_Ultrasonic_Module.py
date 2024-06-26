@@ -72,6 +72,7 @@ class Ultrasonic(MQTT_Module_Interface):
             distances.append(pulseTime * 340.0 / 2.0 / 10000.0)
 
         distances = sorted(distances)
+        print(distances)
         return int(distances[2:-2])  # Median after removing outliers
 
 
