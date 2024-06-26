@@ -16,6 +16,10 @@ class Ultrasonic(MQTT_Module_Interface):
         GPIO.setup(self.trigger_pin, GPIO.OUT)
         GPIO.setup(self.echo_pin, GPIO.IN)
 
+        # Check GPIO pins
+        print("Trigger pin: ", self.trigger_pin)
+        print("Echo pin: ", self.echo_pin)
+
         # We need to create a MQTTHandler object to subscribe to the topic "MotorProducer"
         self.comm_handler = comm_handler
         self.sender = "Submodel1_Operation4"
