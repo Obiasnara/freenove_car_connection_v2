@@ -1,4 +1,4 @@
-import Code.event_based_signaling.Init.InitPythonPath as InitPythonPath
+import Init.InitPythonPath as InitPythonPath
 
 from Handlers.MQTT_Handler import MQTTHandler
 from ENGINE.MQTT_Motor_Module import Motor
