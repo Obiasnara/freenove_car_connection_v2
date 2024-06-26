@@ -3,25 +3,66 @@ import threading
 import psutil
 from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 
+# We want to gather informations about the CPU usage and the PIDs of the processes
+# pids()
+# cpu_percent()
+# cpu_stats()
+# cpu_freq()
+# getloadavg()
+# virtual_memory()
+# swap_memory()
+# disk_usage()
+# disk_partitions()
+# disk_io_counters()
+# net_io_counters()
+# boot_time()
+# users()
+# sensors_temperatures()
+# sensors_fans()
+
 class CPU(MQTT_Module_Interface):
     def __init__(self, comm_handler):
         self.comm_handler = comm_handler
         self.sender = "Submodel1_Operation5"
-        self.CPU_temp = 0
-        self.CPU_usage = 0
         self.getMessage()
 
     def getMessage(self):
         def message_loop():  # This function will run in its own thread
             while True:
-                CPU_pids = psutil.pids()
-                CPU_usage = psutil.cpu_percent()
-                print(CPU_pids)
-                print(CPU_usage)
-                #if CPU_pids != self.CPU_temp or CPU_usage != self.CPU_usage:
-                self.CPU_temp = CPU_pids
-                self.CPU_usage = CPU_usage
-                self.comm_handler.publish(self.sender, str(CPU_pids) + "_" + str(CPU_usage))
+                pids = psutil.pids()
+                cpu_percent = psutil.cpu_percent()  # This is the function that will be called every second
+                cpu_stats = psutil.cpu_stats()
+                cpu_freq = psutil.cpu_freq()
+                getloadavg = psutil.getloadavg()
+                virtual_memory = psutil.virtual_memory()
+                swap_memory = psutil.swap_memory()
+                disk_usage = psutil.disk_usage('/')
+                disk_partitions = psutil.disk_partitions()
+                disk_io_counters = psutil.disk_io_counters()
+                net_io_counters = psutil.net_io_counters()
+                boot_time = psutil.boot_time()
+                users = psutil.users()
+                sensors_temperatures = psutil.sensors_temperatures()
+                sensors_fans = psutil.sensors_fans()
+                # Agregate the data in a JSON format
+                data = {
+                    "pids": pids,
+                    "cpu_percent": cpu_percent,
+                    "cpu_stats": cpu_stats,
+                    "cpu_freq": cpu_freq,
+                    "getloadavg": getloadavg,
+                    "virtual_memory": virtual_memory,
+                    "swap_memory": swap_memory,
+                    "disk_usage": disk_usage,
+                    "disk_partitions": disk_partitions,
+                    "disk_io_counters": disk_io_counters,
+                    "net_io_counters": net_io_counters,
+                    "boot_time": boot_time,
+                    "users": users,
+                    "sensors_temperatures": sensors_temperatures,
+                    "sensors_fans": sensors_fans
+                }
+                self.comm_handler.send_message(self.sender, data)
                 time.sleep(1)  # Sleep within this thread only
 
         thread = threading.Thread(target=message_loop)
