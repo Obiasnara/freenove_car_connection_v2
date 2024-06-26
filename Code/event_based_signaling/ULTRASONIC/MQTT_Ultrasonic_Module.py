@@ -18,7 +18,7 @@ class Ultrasonic(MQTT_Module_Interface):
         # We need to create a MQTTHandler object to subscribe to the topic "MotorProducer"
         self.comm_handler = comm_handler
         self.sender = "Submodel1_Operation4"
-        self.distance_temp = 0
+        self.distance_temp = [0, 0, 0, 0, 0]
         self.getMessage()
 
     def getMessage(self):
@@ -62,6 +62,7 @@ class Ultrasonic(MQTT_Module_Interface):
             pingTime = self.pulseIn(self.echo_pin, GPIO.HIGH, self.timeOut)  # read plus time of echo_pin
             distance_cm[i] = pingTime * 340.0 / 2.0 / 10000.0  # calculate distance with sound speed 340m/s
         distance_cm = sorted(distance_cm)
+        print(distance_cm)
         return int(distance_cm[2])
 
     
