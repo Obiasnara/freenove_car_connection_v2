@@ -43,9 +43,7 @@ class Camera(MQTT_Module_Interface):
         RTMP_SERVER_IP = "157.245.38.231"
         self.ffmpeg_output = FfmpegOutput(output_filename='-f rtmp://{}/live/{}'.format(RTMP_SERVER_IP, stream_name))
         self.camera.add_output(self.ffmpeg_output)
-        
         self.camera.start_recording(self.encoder, 'test.h264', quality=Quality.VERY_LOW)
-
         time.sleep(30)
         self.camera.stop_recording()
         self.camera.close()
