@@ -6,6 +6,7 @@ from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 
 class Ultrasonic(MQTT_Module_Interface):
     def __init__(self, comm_handler):
+        GPIO.cleanup()  # Clean up the GPIO pins
         GPIO.setwarnings(False)
         self.trigger_pin = 27
         self.echo_pin = 22
