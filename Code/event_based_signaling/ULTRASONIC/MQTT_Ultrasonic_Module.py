@@ -25,7 +25,6 @@ class Ultrasonic(MQTT_Module_Interface):
         def message_loop():  # Function to run in a separate thread
             while True:
                 distance = self.get_distance()  # Get distance using your existing function
-                print("Selected distance", distance)
                 if distance != self.distance_temp:
                     self.distance_temp = distance
                     self.comm_handler.publish(self.sender, str(distance))
@@ -62,7 +61,6 @@ class Ultrasonic(MQTT_Module_Interface):
             pingTime = self.pulseIn(self.echo_pin, GPIO.HIGH, self.timeOut)  # read plus time of echo_pin
             distance_cm[i] = pingTime * 340.0 / 2.0 / 10000.0  # calculate distance with sound speed 340m/s
         distance_cm = sorted(distance_cm)
-        print(distance_cm)
         return int(distance_cm[2])
 
     
