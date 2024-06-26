@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class MQTTModuleInterface(ABC):
+class MQTT_Module_Interface(ABC):
     @abstractmethod
     def on_message(self, client, userdata, message):
         pass
