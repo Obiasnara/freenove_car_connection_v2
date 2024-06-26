@@ -19,7 +19,6 @@ class Ultrasonic(MQTT_Module_Interface):
         self.comm_handler = comm_handler
         self.sender = "Submodel1_Operation4"
         self.distance_temp = 0
-        print("Ultrasonic Module is ready!")
         self.getMessage()
 
     def getMessage(self):
@@ -31,9 +30,9 @@ class Ultrasonic(MQTT_Module_Interface):
                     self.distance_temp = distance
                     self.comm_handler.publish(self.sender, str(distance))
                 time.sleep(1)  # Sleep only within this thread
-
-        thread = threading.Thread(target=message_loop)  
-        thread.start()  # Launch the thread
+        message_loop()  # Call the function
+        #thread = threading.Thread(target=message_loop)  
+        #thread.start()  # Launch the thread
     
     def on_message(self, client, userdata, message):
         pass
