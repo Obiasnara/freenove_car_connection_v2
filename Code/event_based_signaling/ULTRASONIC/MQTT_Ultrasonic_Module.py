@@ -18,14 +18,13 @@ class Ultrasonic(MQTT_Module_Interface):
         # We need to create a MQTTHandler object to subscribe to the topic "MotorProducer"
         self.comm_handler = comm_handler
         self.sender = "Submodel1_Operation4"
-        self.distance_temp = [0, 0, 0, 0, 0]
+        self.distance_temp = []
         self.getMessage()
 
     def getMessage(self):
         def message_loop():  # Function to run in a separate thread
             while True:
                 distance = self.get_distance()  # Get distance using your existing function
-                print(distance)
                 if distance != self.distance_temp:
                     self.distance_temp = distance
                     self.comm_handler.publish(self.sender, str(distance))
@@ -40,6 +39,7 @@ class Ultrasonic(MQTT_Module_Interface):
     def destroy(self):
         self.i2cClose()
         self.mqtt_handler.stop()
+        GPIO.cleanup()  # Clean up the GPIO pins
 
     def pulseIn(self, pin, level, timeOut):  # obtain pulse time of a pin under timeOut
         t0 = time.time()
@@ -53,18 +53,26 @@ class Ultrasonic(MQTT_Module_Interface):
         pulseTime = (time.time() - t0) * 1000000
         return pulseTime
 
-    def get_distance(self):  # get the measurement results of ultrasonic module,with unit: cm
-        distance_cm = [0, 0, 0, 0, 0]
-        print("Getting distance")
-        for i in range(5):
-            GPIO.output(self.trigger_pin, GPIO.HIGH)  # make trigger_pin output 10us HIGH level
-            time.sleep(0.00001)  # 10us
-            GPIO.output(self.trigger_pin, GPIO.LOW)  # make trigger_pin output LOW level
-            pingTime = self.pulseIn(self.echo_pin, GPIO.HIGH, self.timeOut)  # read plus time of echo_pin
-            distance_cm[i] = pingTime * 340.0 / 2.0 / 10000.0  # calculate distance with sound speed 340m/s
-            print(distance_cm[i])
-        distance_cm = sorted(distance_cm)
-        print(distance_cm)
-        return int(distance_cm[2])
+    def get_distance(self):
+        distances = []
+        for _ in range(10):  # Increase sample size
+            GPIO.output(self.trigger_pin, GPIO.HIGH)
+            time.sleep(0.00001)  # Initial delay
+            GPIO.output(self.trigger_pin, GPIO.LOW)
+
+            while GPIO.input(self.echo_pin) == GPIO.LOW:  # Wait for echo start
+                pass
+            startTime = time.time()
+
+            while GPIO.input(self.echo_pin) == GPIO.HIGH:  # Wait for echo end
+                if time.time() - startTime > self.timeOut * 0.000001:
+                    return 0  # Timeout
+
+            pulseTime = (time.time() - startTime) * 1000000
+            distances.append(pulseTime * 340.0 / 2.0 / 10000.0)
+
+        distances = sorted(distances)
+        return int(distances[2:-2])  # Median after removing outliers
+
 
     
