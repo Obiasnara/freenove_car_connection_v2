@@ -1,5 +1,5 @@
 from car_utilities.PCA9685 import *
-from Code.event_based_signaling.Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
+from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 
 class Motor(MQTT_Module_Interface):
     def __init__(self, comm_handler):

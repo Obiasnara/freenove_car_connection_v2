@@ -1,7 +1,7 @@
 import time
 import smbus
 
-from Code.event_based_signaling.Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
+from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 
 
 class Battery(MQTT_Module_Interface):
