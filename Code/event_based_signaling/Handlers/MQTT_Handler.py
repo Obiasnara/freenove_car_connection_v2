@@ -1,7 +1,7 @@
 import time
 import json
 import paho.mqtt.client as mqtt
-from Handlers.Handler_Interface import HandlerInterface
+from Code.event_based_signaling.Interfaces.Handler_Interface import HandlerInterface
 
 class MQTTHandler(HandlerInterface):
     

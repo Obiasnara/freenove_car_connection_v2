@@ -1,5 +1,5 @@
 from car_utilities.PCA9685 import *
-from event_based_signaling.MQTT_Module_Interface import MQTT_Module_Interface
+from Code.event_based_signaling.Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 
 class Motor(MQTT_Module_Interface):
     def __init__(self, comm_handler):
@@ -28,6 +28,13 @@ class Motor(MQTT_Module_Interface):
         }
         action[message.topic]()
         
+    def getMessage(self):
+        data = str(self.FrontRightWheelDuty) + "_" + str(self.FrontLeftWheelDuty) + "_" + str(self.BackRightWheelDuty) + "_" + str(self.BackLeftWheelDuty)
+        return data
+
+    def destroy(self):
+        self.setMotorModel(0, 0, 0, 0)
+        self.comm_handler.stop()
 
     def duty_range(self, duty1, duty2, duty3, duty4):
         if duty1 > 4095:
@@ -107,9 +114,6 @@ class Motor(MQTT_Module_Interface):
         print("New duty cycle: ", duty1, duty2, duty3, duty4)
         self.comm_handler.publish(self.sender, self.getMessage())
 
-    def getMessage(self):
-        data = str(self.FrontRightWheelDuty) + "_" + str(self.FrontLeftWheelDuty) + "_" + str(self.BackRightWheelDuty) + "_" + str(self.BackLeftWheelDuty)
-        return data
 
     def getMotorModel(self):
         return self.FrontRightWheelDuty, self.FrontLeftWheelDuty, self.BackRightWheelDuty, self.BackLeftWheelDuty

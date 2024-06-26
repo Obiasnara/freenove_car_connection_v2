@@ -1,19 +1,21 @@
-import InitPythonPath
+import Code.event_based_signaling.Init.InitPythonPath as InitPythonPath
 
-from MQTT_Handler import MQTTHandler
+from Handlers.MQTT_Handler import MQTTHandler
 from ENGINE.MQTT_Motor_Module import Motor
+from BATTERY.MQTT_Battery_Module import Battery
 
 MQTT_BROKER_ADDRESS = "157.245.38.231"
 mqtt_handler = MQTTHandler(MQTT_BROKER_ADDRESS, client_id="car_motor_module")
 motor = Motor(mqtt_handler)
+battery = Battery(mqtt_handler)
 
 def loop():
     while True:
         pass
 
 def destroy():
-    motor.setMotorModel(0, 0, 0, 0)
-    motor.mqtt_handler.stop()
+    motor.destroy()
+    battery.destroy()
 
 if __name__ == '__main__':
     try:

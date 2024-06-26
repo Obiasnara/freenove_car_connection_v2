@@ -1,10 +1,10 @@
 import time
 import smbus
 
-from event_based_signaling.MQTT_Module_Interface import MQTT_Module_Interface
+from Code.event_based_signaling.Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 
 
-class Adc(MQTT_Module_Interface):
+class Battery(MQTT_Module_Interface):
     def __init__(self, comm_handler):
         # Get I2C bus
         self.bus = smbus.SMBus(1)
@@ -43,6 +43,10 @@ class Adc(MQTT_Module_Interface):
 
     def on_message(self, client, userdata, message):
         pass
+
+    def destroy(self):
+        self.i2cClose()
+        self.mqtt_handler.stop()
 
     def analogReadPCF8591(self, chn):  # PCF8591 read ADC value,chn:0,1,2,3
         value = [0, 0, 0, 0, 0, 0, 0, 0, 0]

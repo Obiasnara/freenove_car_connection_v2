@@ -8,3 +8,7 @@ class MQTTModuleInterface(ABC):
     @abstractmethod
     def getMessages(self):
         pass
+
+    @abstractmethod
+    def destroy(self):
+        pass
