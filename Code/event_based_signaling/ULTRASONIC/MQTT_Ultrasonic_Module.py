@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import time
+import threading
 
 from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 
@@ -22,13 +23,17 @@ class Ultrasonic(MQTT_Module_Interface):
         self.getMessage()
 
     def getMessage(self):
-        while True:
-            distance = self.get_distance()
-            print(distance)
-            if distance != self.distance_temp:
-                self.distance_temp = distance
-                self.comm_handler.publish(self.sender, str(distance))
-            time.sleep(1)
+        def message_loop():  # Function to run in a separate thread
+            while True:
+                distance = self.get_distance()  # Get distance using your existing function
+                print(distance)
+                if distance != self.distance_temp:
+                    self.distance_temp = distance
+                    self.comm_handler.publish(self.sender, str(distance))
+                time.sleep(1)  # Sleep only within this thread
+
+        thread = threading.Thread(target=message_loop)  
+        thread.start()  # Launch the thread
     
     def on_message(self, client, userdata, message):
         pass
