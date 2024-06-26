@@ -18,6 +18,7 @@ class Ultrasonic(MQTT_Module_Interface):
         self.comm_handler = comm_handler
         self.sender = "Submodel1_Operation4"
         self.distance_temp = 0
+        print("Ultrasonic Module is ready!")
         self.getMessage()
 
     def getMessage(self):
