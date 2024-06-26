@@ -62,7 +62,7 @@ class CPU(MQTT_Module_Interface):
                     "sensors_temperatures": sensors_temperatures,
                     "sensors_fans": sensors_fans
                 }
-                self.comm_handler.send_message(self.sender, data)
+                self.comm_handler.publish(self.sender, data)
                 time.sleep(1)  # Sleep within this thread only
 
         thread = threading.Thread(target=message_loop)
