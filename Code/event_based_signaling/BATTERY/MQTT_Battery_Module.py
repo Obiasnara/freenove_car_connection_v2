@@ -28,19 +28,22 @@ class Battery(MQTT_Module_Interface):
          # We need to create a MQTTHandler object to subscribe to the topic "MotorProducer"
         self.comm_handler = comm_handler
         self.sender = "Submodel1_Operation3"
+
+        self.Left_IDR_temp = 0
+        self.Right_IDR_temp = 0
+        self.Power_temp = 0
         self.getMessage()
 
     def getMessage(self):
         while True:
-            string = ""
             Left_IDR = self.recvADC(0)
-            string += str(Left_IDR) + "_"
             Right_IDR = self.recvADC(1)
-            string += str(Right_IDR) + "_"
             Power = self.recvADC(2) * 3
-            string += str(Power)
-            self.comm_handler.publish(self.sender, str(string))
-            time.sleep(1)
+            if Left_IDR != self.Left_IDR_temp or Right_IDR != self.Right_IDR_temp or Power != self.Power_temp:
+                self.Left_IDR_temp = Left_IDR
+                self.Right_IDR_temp = Right_IDR
+                self.Power_temp = Power
+                self.comm_handler.publish(self.sender, str(Left_IDR) + "_" + str(Right_IDR) + "_" + str(Power))
 
     def on_message(self, client, userdata, message):
         pass
