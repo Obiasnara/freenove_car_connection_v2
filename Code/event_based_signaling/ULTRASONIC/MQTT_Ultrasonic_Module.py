@@ -24,6 +24,7 @@ class Ultrasonic(MQTT_Module_Interface):
     def getMessage(self):
         while True:
             distance = self.get_distance()
+            print(distance)
             if distance != self.distance_temp:
                 self.distance_temp = distance
                 self.comm_handler.publish(self.sender, str(distance))
