@@ -28,7 +28,7 @@ class Ultrasonic(MQTT_Module_Interface):
             if distance != self.distance_temp:
                 self.distance_temp = distance
                 self.comm_handler.publish(self.sender, str(distance))
-            #time.sleep(1)
+            time.sleep(1)
     
     def on_message(self, client, userdata, message):
         pass

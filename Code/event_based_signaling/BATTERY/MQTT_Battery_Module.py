@@ -1,5 +1,6 @@
 import time
 import smbus
+import threading
 
 from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 
@@ -35,15 +36,20 @@ class Battery(MQTT_Module_Interface):
         self.getMessage()
 
     def getMessage(self):
-        while True:
-            Left_IDR = self.recvADC(0)
-            Right_IDR = self.recvADC(1)
-            Power = self.recvADC(2) * 3
-            if Left_IDR != self.Left_IDR_temp or Right_IDR != self.Right_IDR_temp or Power != self.Power_temp:
-                self.Left_IDR_temp = Left_IDR
-                self.Right_IDR_temp = Right_IDR
-                self.Power_temp = Power
-                self.comm_handler.publish(self.sender, str(Left_IDR) + "_" + str(Right_IDR) + "_" + str(Power))
+        def message_loop():  # This function will run in its own thread
+            while True:
+                Left_IDR = self.recvADC(0)
+                Right_IDR = self.recvADC(1)
+                Power = self.recvADC(2) * 3
+                if Left_IDR != self.Left_IDR_temp or Right_IDR != self.Right_IDR_temp or Power != self.Power_temp:
+                    self.Left_IDR_temp = Left_IDR
+                    self.Right_IDR_temp = Right_IDR
+                    self.Power_temp = Power
+                    self.comm_handler.publish(self.sender, str(Left_IDR) + "_" + str(Right_IDR) + "_" + str(Power))
+                time.sleep(1)  # Sleep within this thread only
+
+        thread = threading.Thread(target=message_loop)
+        thread.start()  # Start the thread
 
     def on_message(self, client, userdata, message):
         pass
