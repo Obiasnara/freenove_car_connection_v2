@@ -12,8 +12,9 @@ class Camera(MQTT_Module_Interface):
         # initialize the camera and grab a reference to the raw camera capture
         self.camera = Picamera2()
         self.camera.configure(self.camera.create_video_configuration())
-        self.encoder = H264Encoder()
-        self.camera.start_recording(self.encoder, 'test.h264', quality=Quality.HIGH)
+        self.encoder = H264Encoder(bitrate=17000000, repeat=True, iperiod=15)
+
+        self.camera.start_recording(self.encoder, 'test.h264', quality=Quality.VERY_LOW)
         time.sleep(10)
         self.camera.stop_recording()
         self.camera.close()
