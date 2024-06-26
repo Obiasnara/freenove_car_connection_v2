@@ -24,6 +24,7 @@ class Ultrasonic(MQTT_Module_Interface):
     def getMessage(self):
         def message_loop():  # Function to run in a separate thread
             while True:
+                print("Getting distance")
                 thread = threading.Thread(target=self.get_distance)  
                 thread.start()  # Launch the thread
                 distance = thread.join()  # Wait for the thread to finish
@@ -61,15 +62,16 @@ class Ultrasonic(MQTT_Module_Interface):
             GPIO.output(self.trigger_pin, GPIO.HIGH)
             time.sleep(0.00001)  # Initial delay
             GPIO.output(self.trigger_pin, GPIO.LOW)
-
+            print("Triggered")
             while GPIO.input(self.echo_pin) == GPIO.LOW:  # Wait for echo start
                 pass
+            print("Echo started")
             startTime = time.time()
 
             while GPIO.input(self.echo_pin) == GPIO.HIGH:  # Wait for echo end
                 if time.time() - startTime > self.timeOut * 0.000001:
                     return 0  # Timeout
-
+            print("Echo ended")
             pulseTime = (time.time() - startTime) * 1000000
             distances.append(pulseTime * 340.0 / 2.0 / 10000.0)
 
