@@ -1,7 +1,7 @@
 from car_utilities.PCA9685 import *
-import json
+from event_based_signaling.MQTT_Module_Interface import MQTT_Module_Interface
 
-class Motor:
+class Motor(MQTT_Module_Interface):
     def __init__(self, comm_handler):
         self.pwm = PCA9685(0x40, debug=True)
         self.pwm.setPWMFreq(50)

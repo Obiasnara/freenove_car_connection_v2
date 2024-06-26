@@ -1,10 +1,11 @@
 import time
-
 import smbus
 
+from event_based_signaling.MQTT_Module_Interface import MQTT_Module_Interface
 
-class Adc:
-    def __init__(self):
+
+class Adc(MQTT_Module_Interface):
+    def __init__(self, comm_handler):
         # Get I2C bus
         self.bus = smbus.SMBus(1)
 
@@ -23,6 +24,25 @@ class Adc:
                 self.Index = "PCF8591"
             else:
                 self.Index = "ADS7830"
+
+         # We need to create a MQTTHandler object to subscribe to the topic "MotorProducer"
+        self.comm_handler = comm_handler
+        self.sender = "test_state"
+        self.getMessage()
+
+    def getMessage(self):
+        while True:
+            Left_IDR = self.recvADC(0)
+            print(Left_IDR)
+            Right_IDR = self.recvADC(1)
+            print(Right_IDR)
+            Power = self.recvADC(2) * 3
+            print(Power)
+            time.sleep(1)
+            print('----')
+
+    def on_message(self, client, userdata, message):
+        pass
 
     def analogReadPCF8591(self, chn):  # PCF8591 read ADC value,chn:0,1,2,3
         value = [0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -66,29 +86,3 @@ class Adc:
 
     def i2cClose(self):
         self.bus.close()
-
-
-def loop():
-    adc = Adc()
-    while True:
-        Left_IDR = adc.recvADC(0)
-        print(Left_IDR)
-        Right_IDR = adc.recvADC(1)
-        print(Right_IDR)
-        Power = adc.recvADC(2) * 3
-        print(Power)
-        time.sleep(1)
-        print('----')
-
-
-def destroy():
-    pass
-
-
-# Main program logic follows:
-if __name__ == '__main__':
-    print('Program is starting ... ')
-    try:
-        loop()
-    except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the child program destroy() will be  executed.
-        destroy()
