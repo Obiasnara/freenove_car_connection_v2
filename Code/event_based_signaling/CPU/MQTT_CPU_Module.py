@@ -16,6 +16,8 @@ class CPU(MQTT_Module_Interface):
             while True:
                 CPU_pids = psutil.pids()
                 CPU_usage = psutil.cpu_percent()
+                print(CPU_pids)
+                print(CPU_usage)
                 #if CPU_pids != self.CPU_temp or CPU_usage != self.CPU_usage:
                 self.CPU_temp = CPU_pids
                 self.CPU_usage = CPU_usage
