@@ -1,6 +1,5 @@
-from picamera2.encoders import H264Encoder, Quality
-from picamera2.outputs import FfmpegOutput
 from picamera2 import Picamera2
+import ffmpeg
 import time
 
 from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
@@ -59,8 +58,16 @@ class Camera(MQTT_Module_Interface):
         self.picam2.start_preview(Preview.NULL)  # Start preview without displaying (for efficiency)
         self.video_config = self.picam2.create_video_configuration(main={"size": (1280, 720)})  # Adjust resolution
         self.picam2.configure(self.video_config)
+
+        process = (
+            ffmpeg
+            .input('pipe:', format='h264')
+            .output(rtmp_url, vcodec='libx264', preset='ultrafast', tune='zerolatency', f='flv')
+            .overwrite_output()
+            .run_async(pipe_stdin=True)
+        )
         # Start Streaming
-        self.picam2.start_recording("test.h264", subprocess.Popen(ffmpeg_cmd, stdin=subprocess.PIPE).stdin)
+        self.picam2.start_recording(process.stdin, format='h264', quality=23)  # Start recording and stream to FFmpeg
 
 
         # initialize the camera and grab a reference to the raw camera capture
@@ -72,7 +79,7 @@ class Camera(MQTT_Module_Interface):
         # self.ffmpeg_output = FfmpegOutput(output_filename='-f rtmp://{}/live/{}'.format(RTMP_SERVER_IP, stream_name))
         # self.encoder.output = self.ffmpeg_output
         # self.camera.start_recording(self.encoder, "test.h264", quality=Quality.VERY_LOW)
-        # time.sleep(30)
+        time.sleep(30)
         self.camera.stop_recording()
         self.camera.close()
 
