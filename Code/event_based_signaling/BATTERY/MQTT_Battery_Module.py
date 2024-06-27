@@ -18,7 +18,6 @@ class Battery(MQTT_Module_Interface):
 
         # ADS7830 Command 
         self.ADS7830_CMD = 0x84  # Single-Ended Inputs
-        print("Battery Module is running")
         for i in range(3):
             aa = self.bus.read_byte_data(self.ADDRESS, 0xf4)
             if aa < 150:
@@ -33,7 +32,6 @@ class Battery(MQTT_Module_Interface):
         self.Left_IDR_temp = 0
         self.Right_IDR_temp = 0
         self.Power_temp = 0
-        print("Battery Module is running")
 
         self.getMessage()
 
@@ -47,7 +45,6 @@ class Battery(MQTT_Module_Interface):
                     self.Left_IDR_temp = Left_IDR
                     self.Right_IDR_temp = Right_IDR
                     self.Power_temp = Power
-                    print("Left_IDR: ", Left_IDR, "Right_IDR: ", Right_IDR, "Power: ", Power)
                     self.comm_handler.publish(self.sender, str(Left_IDR) + "_" + str(Right_IDR) + "_" + str(Power))
                 time.sleep(1)  # Sleep within this thread only
 
