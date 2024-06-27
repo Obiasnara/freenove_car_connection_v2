@@ -15,7 +15,7 @@ class Motor(MQTT_Module_Interface):
         self.comm_handler = comm_handler
         self.comm_handler.subscribe("Submodel1_Operation2")        
         self.comm_handler.client.on_message = self.on_message
-        self.sender = "test_state"
+        self.sender = "measurement_value/get_Measurement_Value_Engines_Values"
         self.comm_handler.publish(self.sender, self.getMessage())
         self.comm_handler.wait_for_publish()
         while True:

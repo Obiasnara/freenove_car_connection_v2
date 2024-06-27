@@ -28,7 +28,7 @@ class Battery(MQTT_Module_Interface):
 
          # We need to create a MQTTHandler object to subscribe to the topic "MotorProducer"
         self.comm_handler = comm_handler
-        self.sender = "Submodel1_Operation3"
+        self.sender = "measurement_value/get_Measurement_Value_Battery_Values"
 
         self.Left_IDR_temp = 0
         self.Right_IDR_temp = 0
