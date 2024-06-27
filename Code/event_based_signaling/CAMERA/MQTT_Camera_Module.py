@@ -6,32 +6,6 @@ import threading
 import time
 from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 
-
-ffmpeg_cmd = [
-        'ffmpeg',  # FFmpeg executable
-        '-hide_banner',  # Hide FFmpeg banner
-        '-loglevel', 'error',  # Suppress non-error FFmpeg logs
-        '-f', 'rawvideo',  # Input format: raw video
-        '-pix_fmt', 'bgr24',  # Pixel format: 24-bit BGR
-        '-s', '{}x{}'.format(int(cap.get(3)), int(cap.get(4))),  # Input video resolution
-        '-r', '30',  # Input frame rate: 60 frames per second
-        '-i', '-',  # Read input from stdin
-        '-c:v', 'libx264',  # Video codec: H.264 with libx264 encoder
-        '-pix_fmt', 'yuv420p',  # Pixel format for output: YUV420p
-        '-preset', 'ultrafast',  # Encoding preset: ultrafast for speed
-        '-tune', 'zerolatency',  # Tune settings for low-latency streaming
-        '-movflags', '+faststart',  # Enable fast start for video playback
-        '-crf', '20',  # Constant Rate Factor for video quality
-        '-g', '1',  # Keyframe interval
-        '-b:v', '5M',  # Target video bitrate: 1 Mbps
-        '-f', 'flv',  # Output format: FLV (Flash Video)
-        '-an',  # Disable audio encoding
-        '-c:a', 'aac',  # Audio codec: AAC
-        '-bufsize', '1M',  # Buffer size for video encoding
-        '-maxrate', '5M',  # Maximum video bitrate: 1 Mbps
-        'rtmp://{}/live/{}'.format(RTMP_SERVER_IP, stream_name)  # RTMP server URL
-    ]
-
 RTMP_SERVER_IP = "157.245.38.231"  
 STREAM_NAME = "stream1"
 
