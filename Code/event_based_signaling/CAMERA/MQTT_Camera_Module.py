@@ -15,8 +15,8 @@ class Camera(MQTT_Module_Interface):
         video_config = self.picam2.create_video_configuration(main={"size": (640, 480)})
         self.picam2.configure(video_config) 
         self.encoder = H264Encoder(bitrate=1000000, repeat=True)  
-        self.output = FfmpegOutput(f'rtmp://{RTMP_SERVER_IP}/live/{STREAM_NAME}')
-
+        #self.output = FfmpegOutput(f'rtmp://{RTMP_SERVER_IP}/live/{STREAM_NAME}')
+        self.output = FfmpegOutput("test.mp4", audio=False)
         self.streaming_thread = None 
 
     def start_streaming(self):
