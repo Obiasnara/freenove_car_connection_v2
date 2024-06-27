@@ -30,10 +30,10 @@ class Motor(MQTT_Module_Interface):
         
     def getMessage(self):
         data = {
-            FrontRightWheelDuty: self.FrontRightWheelDuty,
-            FrontLeftWheelDuty: self.FrontLeftWheelDuty,
-            BackRightWheelDuty: self.BackRightWheelDuty,
-            BackLeftWheelDuty: self.BackLeftWheelDuty
+            "FrontRightWheelDuty": self.FrontRightWheelDuty,
+            "FrontLeftWheelDuty": self.FrontLeftWheelDuty,
+            "BackRightWheelDuty": self.BackRightWheelDuty,
+            "BackLeftWheelDuty": self.BackLeftWheelDuty
         }
         return data
 
