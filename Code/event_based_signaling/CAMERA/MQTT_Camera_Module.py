@@ -9,7 +9,7 @@ rtmp_url = "rtmp://157.245.38.231/live/stream1"
 class Camera(MQTT_Module_Interface):
     def __init__(self, comm_handler): 
         self.comm_handler = comm_handler
-        self.sender = "Submodel1_Operation6"
+        self.sender = "measurement_value/get_Measurement_Value_Video_Values"
         self.getMessages()
 
         self.camera = Picamera2()
@@ -32,7 +32,7 @@ class Camera(MQTT_Module_Interface):
     def getMessages(self):
         def message_loop():  # This function will run in its own thread
             while True:
-                self.comm_handler.publish(self.sender, rtmp_url)
+                self.comm_handler.publish(self.sender, {"Video_Rtmp_Url": rtmp_url})
                 time.sleep(30)  # Sleep within this thread only
         thread = threading.Thread(target=message_loop)
         thread.start()  # Start the thread

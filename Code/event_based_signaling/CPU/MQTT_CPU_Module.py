@@ -23,7 +23,7 @@ from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 class CPU(MQTT_Module_Interface):
     def __init__(self, comm_handler):
         self.comm_handler = comm_handler
-        self.sender = "Submodel1_Operation5"
+        self.sender = "measurement_value/get_Measurement_Value_CPU_Values"
         self.getMessage()
 
     def getMessage(self):

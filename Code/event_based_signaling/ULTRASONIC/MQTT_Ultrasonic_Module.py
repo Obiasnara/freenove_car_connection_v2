@@ -17,7 +17,7 @@ class Ultrasonic(MQTT_Module_Interface):
 
         # We need to create a MQTTHandler object to subscribe to the topic "MotorProducer"
         self.comm_handler = comm_handler
-        self.sender = "Submodel1_Operation4"
+        self.sender = "measurement_value/get_Measurement_Value_Ultrasonic_Values"
         self.distance_temp = [0, 0, 0, 0, 0]
         self.getMessage()
 
@@ -27,7 +27,7 @@ class Ultrasonic(MQTT_Module_Interface):
                 distance = self.get_distance()  # Get distance using your existing function
                 if distance != self.distance_temp:
                     self.distance_temp = distance
-                    self.comm_handler.publish(self.sender, str(distance))
+                    self.comm_handler.publish(self.sender, {"Distance": distance})  # Publish the distance to the topic "MotorProducer"
                 time.sleep(1)  # Sleep only within this thread
         
         thread = threading.Thread(target=message_loop)  
