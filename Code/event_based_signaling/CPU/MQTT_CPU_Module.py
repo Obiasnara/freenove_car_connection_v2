@@ -46,18 +46,13 @@ class CPU(MQTT_Module_Interface):
                 sensors_fans = psutil.sensors_fans()
                 # 10 most CPU-intensive processes
                 most_cpu_intensive_processes = []
-                i=0
-                # Sort the processes by CPU usage
-                for proc in sorted([psutil.Process(pid) for pid in pids], key=lambda proc: proc.info['cpu_percent'], reverse=True):
-                    if i == 10:
-                        break
-                    most_cpu_intensive_processes.append({
-                        "pid": proc.pid,
-                        "name": proc.name(),
-                        "cpu_percent": proc.info['cpu_percent']
-                    })
-                    i += 1
-                    
+                for proc in psutil.process_iter(['pid', 'name', 'cpu_percent']):
+                    try:
+                        if proc.info['cpu_percent'] > 0:
+                            most_cpu_intensive_processes.append(proc.info)
+                    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                        pass
+                most_cpu_intensive_processes = sorted(most_cpu_intensive_processes, key=lambda x: x['cpu_percent'], reverse=True)[:10]
 
                 # Agregate the data in a JSON format
                 data = {
