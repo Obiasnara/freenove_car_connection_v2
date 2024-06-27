@@ -45,7 +45,7 @@ class Camera(MQTT_Module_Interface):
 
         self.encoder.output = self.ffmpeg_output
         self.ffmpeg_process = subprocess.Popen(ffmpeg_cmd, stdin=subprocess.PIPE)
-        self.picam2.start_recording(self.encoder, self.ffmpeg_process.stdin)  
+        self.picam2.start_recording(self.encoder, self.ffmpeg_output)  
 
         self.streaming_thread = threading.Thread(target=self._monitor_streaming)
         self.streaming_thread.start()
