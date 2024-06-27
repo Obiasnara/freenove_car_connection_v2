@@ -1,6 +1,6 @@
 from car_utilities.PCA9685 import *
 from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
-
+import time
 class Motor(MQTT_Module_Interface):
     def __init__(self, comm_handler):
         self.pwm = PCA9685(0x40, debug=True)
@@ -18,7 +18,10 @@ class Motor(MQTT_Module_Interface):
         self.sender = "test_state"
         self.comm_handler.publish(self.sender, self.getMessage())
         self.comm_handler.wait_for_publish()
-
+        while True:
+            # Only for testing purposes
+            self.comm_handler.publish(self.sender, self.getMessage())
+            time.sleep(1)
     def on_message(self, client, userdata, message):
         print(f"Received message '{message.payload.decode()}' on topic '{message.topic}'")
         # Weel1_Weel2_Weel3_Weel4
