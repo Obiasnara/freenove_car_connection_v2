@@ -1,6 +1,6 @@
 from picamera2 import Picamera2, Preview
 from picamera2.encoders import H264Encoder, Quality
-from picamera2.outputs import FfmpegOutput
+from picamera2.outputs import FfmpegOutput, FileOutput
 import subprocess
 import threading
 import time
@@ -16,7 +16,8 @@ class Camera(MQTT_Module_Interface):
         self.picam2.configure(video_config) 
         self.encoder = H264Encoder(bitrate=1000000, repeat=True)  
         #self.output = FfmpegOutput(f'rtmp://{RTMP_SERVER_IP}/live/{STREAM_NAME}')
-        self.output = FfmpegOutput("test.mp4", audio=False)
+        #self.output = FfmpegOutput("test.mp4", audio=False)
+        self.output = FileOutput('testazdazd.h264')
         self.streaming_thread = None 
 
     def start_streaming(self):
