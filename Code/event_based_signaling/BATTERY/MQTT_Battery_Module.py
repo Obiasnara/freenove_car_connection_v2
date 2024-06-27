@@ -18,7 +18,7 @@ class Battery(MQTT_Module_Interface):
 
         # ADS7830 Command 
         self.ADS7830_CMD = 0x84  # Single-Ended Inputs
-
+        print("Battery Module is running")
         for i in range(3):
             aa = self.bus.read_byte_data(self.ADDRESS, 0xf4)
             if aa < 150:
