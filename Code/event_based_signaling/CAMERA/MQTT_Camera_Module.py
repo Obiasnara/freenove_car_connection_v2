@@ -31,7 +31,7 @@ class Camera(MQTT_Module_Interface):
             '-c:a', 'aac',  # Audio codec: AAC
             '-bufsize', '1M',  # Buffer size for video encoding
             '-maxrate', '5M',  # Maximum video bitrate: 1 Mbps
-            'rtmp://{}/live/{}'.format(RTMP_SERVER_IP, stream_name)  # RTMP server URL
+            rtmp_url
         ]
         self.output = FfmpegOutput(ffmpeg_cmd)
         #self.output = FfmpegOutput(f"-f flv {rtmp_url}")  
