@@ -5,6 +5,25 @@ import time
 
 from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 
+
+import subprocess
+from picamera2 import Picamera2, Preview
+
+
+# FFmpeg Command
+rtmp_url = "rtmp://your-server-address/live/your-stream-key"  
+ffmpeg_cmd = [
+    "ffmpeg",
+    "-re", "-f", "h264", 
+    "-i", "-",  
+    "-c:v", "libx264",  
+    "-preset", "ultrafast", 
+    "-tune", "zerolatency", 
+    "-f", "flv", 
+    rtmp_url
+]
+
+
 # ffmpeg_cmd = [
 #         'ffmpeg',  # FFmpeg executable
 #         '-hide_banner',  # Hide FFmpeg banner
@@ -35,16 +54,28 @@ class Camera(MQTT_Module_Interface):
         self.comm_handler = comm_handler
         self.sender = "Submodel1_Operation6"
 
+        # Camera Setup
+        self.picam2 = Picamera2()
+        self.picam2.start_preview(Preview.NULL)  # Start preview without displaying (for efficiency)
+        self.video_config = self.picam2.create_video_configuration(main={"size": (1280, 720)})  # Adjust resolution
+        self.picam2.configure(self.video_config)
+        # Start Streaming
+        self.picam2.start_recording(
+            FfmpegEncoder(),
+            subprocess.Popen(ffmpeg_cmd, stdin=subprocess.PIPE).stdin
+        )
+
+
         # initialize the camera and grab a reference to the raw camera capture
-        self.camera = Picamera2()
-        self.camera.configure(self.camera.create_video_configuration())
-        self.encoder = H264Encoder(bitrate=170000, repeat=True, iperiod=15)
-        stream_name = "stream1"
-        RTMP_SERVER_IP = "157.245.38.231"
-        self.ffmpeg_output = FfmpegOutput(output_filename='-f rtmp://{}/live/{}'.format(RTMP_SERVER_IP, stream_name))
-        self.encoder.output = self.ffmpeg_output
-        self.camera.start_recording(self.encoder, "test.h264", quality=Quality.VERY_LOW)
-        time.sleep(30)
+        # self.camera = Picamera2()
+        # self.camera.configure(self.camera.create_video_configuration())
+        # self.encoder = H264Encoder(bitrate=170000, repeat=True, iperiod=15)
+        # stream_name = "stream1"
+        # RTMP_SERVER_IP = "157.245.38.231"
+        # self.ffmpeg_output = FfmpegOutput(output_filename='-f rtmp://{}/live/{}'.format(RTMP_SERVER_IP, stream_name))
+        # self.encoder.output = self.ffmpeg_output
+        # self.camera.start_recording(self.encoder, "test.h264", quality=Quality.VERY_LOW)
+        # time.sleep(30)
         self.camera.stop_recording()
         self.camera.close()
 
