@@ -16,10 +16,10 @@ class Camera(MQTT_Module_Interface):
         self.start_streaming()
 
     def start_streaming(self):
-        self.picam2.start_recording(self.encoder, self.output) 
+        self.camera.start_recording(self.encoder, self.output) 
 
     def stop_streaming(self):
-        self.picam2.stop_recording()
+        self.camera.stop_recording()
 
     def on_message(self, client, userdata, message):
         if message.topic == self.mqtt_topic:
