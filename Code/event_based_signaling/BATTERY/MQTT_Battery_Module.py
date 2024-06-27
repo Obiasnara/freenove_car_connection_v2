@@ -33,6 +33,8 @@ class Battery(MQTT_Module_Interface):
         self.Left_IDR_temp = 0
         self.Right_IDR_temp = 0
         self.Power_temp = 0
+        print("Battery Module is running")
+
         self.getMessage()
 
     def getMessage(self):
@@ -49,7 +51,6 @@ class Battery(MQTT_Module_Interface):
                     self.comm_handler.publish(self.sender, str(Left_IDR) + "_" + str(Right_IDR) + "_" + str(Power))
                 time.sleep(1)  # Sleep within this thread only
 
-        print("Battery Module is running")
         thread = threading.Thread(target=message_loop)
         thread.start()  # Start the thread
 
