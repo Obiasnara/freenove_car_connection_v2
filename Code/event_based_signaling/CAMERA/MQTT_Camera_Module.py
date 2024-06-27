@@ -7,7 +7,7 @@ video_config = picam2.create_video_configuration()
 picam2.configure(video_config)
 
 # Replace 'your_rtmp_url' with your actual RTMP server URL
-rtmp_url = "rtmp://your_rtmp_url/live/stream_key"
+rtmp_url = "rtmp://157.245.38.231/live/stream1"
 
 # Configure FFmpeg output for RTMP streaming
 output = FfmpegOutput(f"-f flv {rtmp_url}")  
