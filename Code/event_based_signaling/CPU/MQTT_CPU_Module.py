@@ -47,15 +47,17 @@ class CPU(MQTT_Module_Interface):
                 # 10 most CPU-intensive processes
                 most_cpu_intensive_processes = []
                 i=0
-                for proc in psutil.process_iter(['pid', 'name', 'cpu_percent']):
+                # Sort the processes by CPU usage
+                for proc in sorted([psutil.Process(pid) for pid in pids], key=lambda proc: proc.info['cpu_percent'], reverse=True):
                     if i == 10:
                         break
-                    try:
-                        if proc.info['cpu_percent'] > 0:
-                            most_cpu_intensive_processes.append(proc.info)
-                            i+=1
-                    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                        pass
+                    most_cpu_intensive_processes.append({
+                        "pid": proc.pid,
+                        "name": proc.name(),
+                        "cpu_percent": proc.info['cpu_percent']
+                    })
+                    i += 1
+                    
 
                 # Agregate the data in a JSON format
                 data = {
