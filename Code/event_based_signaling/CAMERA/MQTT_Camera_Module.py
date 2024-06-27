@@ -1,39 +1,23 @@
-from picamera2 import Picamera2, Preview
-from picamera2.encoders import H264Encoder, Quality
-from picamera2.outputs import FfmpegOutput, FileOutput
-import subprocess
-import threading
-import time
-from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
+from picamera2 import Picamera2
+from picamera2.encoders import H264Encoder
+from picamera2.outputs import FfmpegOutput
 
-RTMP_SERVER_IP = "157.245.38.231"  
-STREAM_NAME = "stream1"
+picam2 = Picamera2()
+video_config = picam2.create_video_configuration()
+picam2.configure(video_config)
 
-class Camera(MQTT_Module_Interface):
-    def __init__(self, comm_handler=None): 
-        self.picam2 = Picamera2()
-        video_config = self.picam2.create_video_configuration(main={"size": (640, 480)})
-        self.picam2.configure(video_config) 
-        self.encoder = H264Encoder(bitrate=1000000, repeat=True)  
-        #self.output = FfmpegOutput(f'rtmp://{RTMP_SERVER_IP}/live/{STREAM_NAME}')
-        #self.output = FfmpegOutput("test.mp4", audio=False)
-        self.output = FileOutput('testazdazd.h264')
-        self.streaming_thread = None 
+# Replace 'your_rtmp_url' with your actual RTMP server URL
+rtmp_url = "rtmp://your_rtmp_url/live/stream_key"
 
-    def start_streaming(self):
-        self.picam2.start_recording(self.encoder, self.output) 
+# Configure FFmpeg output for RTMP streaming
+output = FfmpegOutput(f"-f flv {rtmp_url}")  
 
-    def stop_streaming(self):
-        self.picam2.stop_recording()
+encoder = H264Encoder()
+picam2.start_recording(encoder, output)
 
-    def on_message(self, client, userdata, message):
-        if message.topic == self.mqtt_topic:
-            self.camera.take_picture()
-            self.camera.send_picture()
-            self.camera.delete_picture()
-
-    def getMessages(self):
+# Keep the stream running (you'll need to handle stopping in your application)
+try:
+    while True:
         pass
-    
-    def destroy(self):
-        pass
+except KeyboardInterrupt:
+    picam2.stop_recording()
