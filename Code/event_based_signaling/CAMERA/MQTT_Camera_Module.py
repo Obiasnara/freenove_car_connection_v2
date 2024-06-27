@@ -20,39 +20,17 @@ class Camera(MQTT_Module_Interface):
 
     def start_streaming(self):
         ffmpeg_cmd = [
-            'ffmpeg',  # FFmpeg executable
-            '-hide_banner',  # Hide FFmpeg banner
-            '-loglevel', 'error',  # Suppress non-error FFmpeg logs
-            '-f', 'rawvideo',  # Input format: raw video
-            '-pix_fmt', 'bgr24',  # Pixel format: 24-bit BGR
-            '-r', '30',  # Input frame rate: 60 frames per second
-            '-i', '-',  # Read input from stdin
-            '-c:v', 'libx264',  # Video codec: H.264 with libx264 encoder
-            '-pix_fmt', 'yuv420p',  # Pixel format for output: YUV420p
-            '-preset', 'ultrafast',  # Encoding preset: ultrafast for speed
-            '-tune', 'zerolatency',  # Tune settings for low-latency streaming
-            '-movflags', '+faststart',  # Enable fast start for video playback
-            '-crf', '20',  # Constant Rate Factor for video quality
-            '-g', '1',  # Keyframe interval
-            '-b:v', '5M',  # Target video bitrate: 1 Mbps
-            '-f', 'flv',  # Output format: FLV (Flash Video)
-            '-an',  # Disable audio encoding
-            '-c:a', 'aac',  # Audio codec: AAC
-            '-bufsize', '1M',  # Buffer size for video encoding
-            '-maxrate', '5M',  # Maximum video bitrate: 1 Mbps
-            'rtmp://{}/live/{}'.format(RTMP_SERVER_IP, STREAM_NAME)  # RTMP server URL
+            'ffmpeg',
+            '-hide_banner', '-loglevel', 'error',
+            '-f', 'h264',  # Input format is H.264 
+            '-i', '-',     # Input from stdin (pipe)
+            '-c:v', 'copy',  # No re-encoding for speed (if needed you can add -c:v libx264)
+            '-f', 'flv',  # Output format is FLV (required for RTMP)
+            'rtmp://{}/live/{}'.format(RTMP_SERVER_IP, STREAM_NAME)
         ]
 
-        self.encoder.output = self.ffmpeg_output
         self.ffmpeg_process = subprocess.Popen(ffmpeg_cmd, stdin=subprocess.PIPE)
-        self.picam2.start_recording(self.encoder, self.ffmpeg_output)  
-
-        self.streaming_thread = threading.Thread(target=self._monitor_streaming)
-        self.streaming_thread.start()
-
-    def _monitor_streaming(self):
-        while self.picam2.is_recording:
-            time.sleep(0.1)  # Periodic check, adjust as needed
+        self.picam2.start_recording(self.encoder, self.ffmpeg_process.stdin)  
 
     def stop_streaming(self):
         self.picam2.stop_recording()
