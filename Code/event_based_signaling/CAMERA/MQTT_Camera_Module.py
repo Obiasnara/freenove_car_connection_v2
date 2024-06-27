@@ -1,26 +1,10 @@
-from picamera2 import Picamera2
-import ffmpeg
-import time
-
-from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
-
-
+from picamera2 import Picamera2, Preview, Quality
+from picamera2.encoders import H264Encoder
+from picamera2.outputs import FfmpegOutput
 import subprocess
-from picamera2 import Picamera2, Preview
-
-
-# FFmpeg Command
-rtmp_url = "rtmp://your-server-address/live/your-stream-key"  
-ffmpeg_cmd = [
-    "ffmpeg",
-    "-re", "-f", "h264", 
-    "-i", "-",  
-    "-c:v", "libx264",  
-    "-preset", "ultrafast", 
-    "-tune", "zerolatency", 
-    "-f", "flv", 
-    rtmp_url
-]
+import threading
+import time
+from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 
 
 # ffmpeg_cmd = [
@@ -48,40 +32,47 @@ ffmpeg_cmd = [
 #         'rtmp://{}/live/{}'.format(RTMP_SERVER_IP, stream_name)  # RTMP server URL
 #     ]
 
+RTMP_SERVER_IP = "157.245.38.231"  
+STREAM_NAME = "stream1"
+
 class Camera(MQTT_Module_Interface):
-    def __init__(self, comm_handler):
-        self.comm_handler = comm_handler
-        self.sender = "Submodel1_Operation6"
-
-        # Camera Setup
+    def __init__(self, comm_handler):  # Optional comm_handler for future use
         self.picam2 = Picamera2()
-        self.picam2.start_preview(Preview.NULL)  # Start preview without displaying (for efficiency)
-        self.video_config = self.picam2.create_video_configuration(main={"size": (1280, 720)})  # Adjust resolution
-        self.picam2.configure(self.video_config)
+        self.picam2.configure(self.picam2.create_video_configuration(main={"size": (640, 480)}))  # Set desired resolution
+        self.encoder = H264Encoder(bitrate=1000000, repeat=True)  
+        self.ffmpeg_output = FfmpegOutput('rtmp://{}/live/{}'.format(RTMP_SERVER_IP, STREAM_NAME))  
+        self.streaming_thread = None 
+        self.start_streaming() 
 
-        process = (
-            ffmpeg
-            .input('pipe:', format='h264')
-            .output(rtmp_url, vcodec='libx264', preset='ultrafast', tune='zerolatency', f='flv')
-            .overwrite_output()
-            .run_async(pipe_stdin=True)
-        )
-        # Start Streaming
-        self.picam2.start_recording(process.stdin, format='h264', quality=23)  # Start recording and stream to FFmpeg
+    def start_streaming(self):
+        ffmpeg_cmd = [
+            'ffmpeg',
+            '-hide_banner', '-loglevel', 'error',
+            '-f', 'h264', 
+            '-i', '-',  # Input from stdin (pipe)
+            '-c:v', 'copy',  # No re-encoding for speed
+            '-f', 'flv',
+            '-an', #Disable audio
+            'rtmp://{}/live/{}'.format(RTMP_SERVER_IP, STREAM_NAME) 
+        ]
 
+        self.ffmpeg_process = subprocess.Popen(ffmpeg_cmd, stdin=subprocess.PIPE)
+        self.picam2.start_recording(self.encoder, self.ffmpeg_process.stdin)  
 
-        # initialize the camera and grab a reference to the raw camera capture
-        # self.camera = Picamera2()
-        # self.camera.configure(self.camera.create_video_configuration())
-        # self.encoder = H264Encoder(bitrate=170000, repeat=True, iperiod=15)
-        # stream_name = "stream1"
-        # RTMP_SERVER_IP = "157.245.38.231"
-        # self.ffmpeg_output = FfmpegOutput(output_filename='-f rtmp://{}/live/{}'.format(RTMP_SERVER_IP, stream_name))
-        # self.encoder.output = self.ffmpeg_output
-        # self.camera.start_recording(self.encoder, "test.h264", quality=Quality.VERY_LOW)
-        time.sleep(30)
-        self.camera.stop_recording()
-        self.camera.close()
+        self.streaming_thread = threading.Thread(target=self._monitor_streaming)
+        self.streaming_thread.start()
+
+    def _monitor_streaming(self):
+        while self.picam2.is_recording:
+            time.sleep(0.1)  # Periodic check, adjust as needed
+
+    def stop_streaming(self):
+        self.picam2.stop_recording()
+        if self.ffmpeg_process:
+            self.ffmpeg_process.stdin.close()
+            self.ffmpeg_process.wait() 
+        if self.streaming_thread:
+            self.streaming_thread.join() 
 
     def on_message(self, client, userdata, message):
         if message.topic == self.mqtt_topic:
