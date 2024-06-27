@@ -60,7 +60,7 @@ class Camera(MQTT_Module_Interface):
         self.video_config = self.picam2.create_video_configuration(main={"size": (1280, 720)})  # Adjust resolution
         self.picam2.configure(self.video_config)
         # Start Streaming
-        self.picam2.start_recording(subprocess.Popen(ffmpeg_cmd, stdin=subprocess.PIPE).stdin)
+        self.picam2.start_recording("test.h264", subprocess.Popen(ffmpeg_cmd, stdin=subprocess.PIPE).stdin)
 
 
         # initialize the camera and grab a reference to the raw camera capture
