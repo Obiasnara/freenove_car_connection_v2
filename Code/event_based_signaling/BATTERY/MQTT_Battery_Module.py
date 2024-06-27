@@ -45,7 +45,7 @@ class Battery(MQTT_Module_Interface):
                     self.Left_IDR_temp = Left_IDR
                     self.Right_IDR_temp = Right_IDR
                     self.Power_temp = Power
-                    self.comm_handler.publish(self.sender, str(Left_IDR) + "_" + str(Right_IDR) + "_" + str(Power))
+                    self.comm_handler.publish(self.sender, {"Left_IDR": Left_IDR, "Right_IDR": Right_IDR, "Power": Power})
                 time.sleep(1)  # Sleep within this thread only
 
         thread = threading.Thread(target=message_loop)

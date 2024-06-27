@@ -29,7 +29,12 @@ class Motor(MQTT_Module_Interface):
         action[message.topic]()
         
     def getMessage(self):
-        data = str(self.FrontRightWheelDuty) + "_" + str(self.FrontLeftWheelDuty) + "_" + str(self.BackRightWheelDuty) + "_" + str(self.BackLeftWheelDuty)
+        data = {
+            FrontRightWheelDuty: self.FrontRightWheelDuty,
+            FrontLeftWheelDuty: self.FrontLeftWheelDuty,
+            BackRightWheelDuty: self.BackRightWheelDuty,
+            BackLeftWheelDuty: self.BackLeftWheelDuty
+        }
         return data
 
     def destroy(self):
