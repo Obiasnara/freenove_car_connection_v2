@@ -33,7 +33,7 @@ class Camera(MQTT_Module_Interface):
         def message_loop():  # This function will run in its own thread
             while True:
                 self.comm_handler.publish(self.sender, {"Video_Rtmp_Url": rtmp_url})
-                time.sleep(30)  # Sleep within this thread only
+                time.sleep(1)  # Sleep within this thread only
         thread = threading.Thread(target=message_loop)
         thread.start()  # Start the thread
     
