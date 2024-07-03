@@ -6,6 +6,7 @@ import time
 from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 
 rtmp_url = "rtmp://157.245.38.231/live/stream1"
+hls_url = "https://157.245.38.231/hls/stream1.m3u8"
 class Camera(MQTT_Module_Interface):
     def __init__(self, comm_handler): 
         self.comm_handler = comm_handler
@@ -32,7 +33,7 @@ class Camera(MQTT_Module_Interface):
     def getMessages(self):
         def message_loop():  # This function will run in its own thread
             while True:
-                self.comm_handler.publish(self.sender, {"Video_Rtmp_Url": rtmp_url})
+                self.comm_handler.publish(self.sender, {"Video_HLS_Url": hls_url})
                 time.sleep(1)  # Sleep within this thread only
         thread = threading.Thread(target=message_loop)
         thread.start()  # Start the thread
