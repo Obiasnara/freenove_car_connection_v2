@@ -1,4 +1,4 @@
-from car_utilities.PCA9685 import *
+from PCA9685 import *
 from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 import time
 class Motor(MQTT_Module_Interface):
