@@ -1,6 +1,6 @@
 from ENGINE.PCA9685 import *
 from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
-import time
+import json
 class Motor(MQTT_Module_Interface):
     def __init__(self, comm_handler):
         self.pwm = PCA9685(0x40, debug=True)
@@ -19,18 +19,39 @@ class Motor(MQTT_Module_Interface):
         self.comm_handler.publish(self.sender, self.getMessage())
         self.comm_handler.wait_for_publish()
         
+    import json
+
     def on_message(self, client, userdata, message):
         print(f"Received message '{message.payload.decode()}' on topic '{message.topic}'")
-        # We want to parse the JSON message to get the values of the engines
-        string_message = message.payload.decode().split(",")
-        # We create a dictionary with the actions that we want to perform
-        # Left_Front_Engine_RPM, Right_Front_Engine_RPM, Left_Back_Engine_RPM, Right_Back_Engine_RPM are the values of the engines
-        print(string_message)
-        action = {
-        "measurement_value/Engines_Values_ChangeRotationSpeeds": lambda: self.setMotorModel(int(string_message[0]), int(string_message[1]), int(string_message[2]), int(string_message[3]))
-        }
-        action[message.topic]()
-        
+
+        try:
+            data = json.loads(message.payload.decode())
+
+            # Action Dictionary (Mapping topics to functions)
+            actions = {
+                "measurement_value/Engines_Values_ChangeRotationSpeeds": lambda: self.setMotorModel(
+                    data.get("FrontRightWheelDuty"),
+                    data.get("FrontLeftWheelDuty"),
+                    data.get("BackRightWheelDuty"),
+                    data.get("BackLeftWheelDuty")
+                ),
+                # Add more actions for other topics here...
+            }
+
+            # Execute Action Based on Topic
+            action_function = actions.get(message.topic)
+            if action_function:
+                action_function()
+            else:
+                print(f"No action defined for topic: {message.topic}")
+
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON message: {e}")
+
+        except KeyError as e:
+            print(f"Missing key in JSON message for topic '{message.topic}': {e}")
+
+
     def getMessage(self):
         data = {
             "FrontRightWheelDuty": self.FrontRightWheelDuty,
