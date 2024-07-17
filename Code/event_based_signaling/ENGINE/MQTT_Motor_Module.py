@@ -27,7 +27,7 @@ class Motor(MQTT_Module_Interface):
         # Left_Front_Engine_RPM, Right_Front_Engine_RPM, Left_Back_Engine_RPM, Right_Back_Engine_RPM are the values of the engines
         print(string_message)
         action = {
-        "Engines_Values_ChangeRotationSpeeds": lambda: self.setMotorModel(int(string_message[0]), int(string_message[1]), int(string_message[2]), int(string_message[3]))
+        "measurement_value/Engines_Values_ChangeRotationSpeeds": lambda: self.setMotorModel(int(string_message[0]), int(string_message[1]), int(string_message[2]), int(string_message[3]))
         }
         action[message.topic]()
         
