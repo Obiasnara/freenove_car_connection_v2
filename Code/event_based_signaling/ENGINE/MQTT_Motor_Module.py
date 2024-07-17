@@ -13,7 +13,7 @@ class Motor(MQTT_Module_Interface):
         
         # We need to create a MQTTHandler object to subscribe to the topic "MotorProducer"
         self.comm_handler = comm_handler
-        self.comm_handler.subscribe("Submodel1_Operation2")        
+        self.comm_handler.subscribe("engines_values")        
         self.comm_handler.client.on_message = self.on_message
         self.sender = "measurement_value/get_Measurement_Value_Engines_Values"
         self.comm_handler.publish(self.sender, self.getMessage())
@@ -21,10 +21,13 @@ class Motor(MQTT_Module_Interface):
         
     def on_message(self, client, userdata, message):
         print(f"Received message '{message.payload.decode()}' on topic '{message.topic}'")
-        # Weel1_Weel2_Weel3_Weel4
-        string_message = message.payload.decode().split("_")
+        # We want to parse the JSON message to get the values of the engines
+        string_message = message.payload.decode().split(",")
+        # We create a dictionary with the actions that we want to perform
+        # Left_Front_Engine_RPM, Right_Front_Engine_RPM, Left_Back_Engine_RPM, Right_Back_Engine_RPM are the values of the engines
+        print(string_message)
         action = {
-        "Submodel1_Operation2": lambda: self.setMotorModel(int(string_message[0]), int(string_message[1]), int(string_message[2]), int(string_message[3]))
+        "engines_values": lambda: self.setMotorModel(int(string_message[0]), int(string_message[1]), int(string_message[2]), int(string_message[3]))
         }
         action[message.topic]()
         
