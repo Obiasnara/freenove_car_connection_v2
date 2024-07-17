@@ -18,8 +18,6 @@ class Motor(MQTT_Module_Interface):
         self.sender = "measurement_value/get_Measurement_Value_Engines_Values"
         self.comm_handler.publish(self.sender, self.getMessage())
         self.comm_handler.wait_for_publish()
-        
-    import json
 
     def on_message(self, client, userdata, message):
         print(f"Received message '{message.payload.decode()}' on topic '{message.topic}'")
@@ -142,8 +140,7 @@ class Motor(MQTT_Module_Interface):
         self.right_Lower_Wheel(duty4)
         print("New duty cycle: ", duty1, duty2, duty3, duty4)
         self.comm_handler.publish(self.sender, self.getMessage())
-        print("Published new duty cycle: ", self.getMessage())
-
+        self.comm_handler.wait_for_publish()
 
     def getMotorModel(self):
         return self.FrontRightWheelDuty, self.FrontLeftWheelDuty, self.BackRightWheelDuty, self.BackLeftWheelDuty
