@@ -142,6 +142,7 @@ class Motor(MQTT_Module_Interface):
         self.right_Lower_Wheel(duty4)
         print("New duty cycle: ", duty1, duty2, duty3, duty4)
         self.comm_handler.publish(self.sender, self.getMessage())
+        print("Published new duty cycle: ", self.getMessage())
 
 
     def getMotorModel(self):
