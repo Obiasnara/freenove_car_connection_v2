@@ -30,7 +30,7 @@ class Motor(MQTT_Module_Interface):
             actions = {
                 "measurement_value/Engines_Values_ChangeRotationSpeeds": lambda: self.setMotorModel(
                     data.get("FrontLeftWheelDuty"),
-                    data.get("BackLeftWheelDuty")
+                    data.get("BackLeftWheelDuty"),
                     data.get("FrontRightWheelDuty"),
                     data.get("BackRightWheelDuty"),
                 ),
