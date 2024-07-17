@@ -29,10 +29,10 @@ class Motor(MQTT_Module_Interface):
             # Action Dictionary (Mapping topics to functions)
             actions = {
                 "measurement_value/Engines_Values_ChangeRotationSpeeds": lambda: self.setMotorModel(
-                    data.get("FrontRightWheelDuty"),
                     data.get("FrontLeftWheelDuty"),
-                    data.get("BackRightWheelDuty"),
                     data.get("BackLeftWheelDuty")
+                    data.get("FrontRightWheelDuty"),
+                    data.get("BackRightWheelDuty"),
                 ),
                 # Add more actions for other topics here...
             }
