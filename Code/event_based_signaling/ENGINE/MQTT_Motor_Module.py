@@ -1,6 +1,7 @@
 from ENGINE.PCA9685 import *
 from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 import json
+import threading
 class Motor(MQTT_Module_Interface):
     def __init__(self, comm_handler):
         self.pwm = PCA9685(0x40, debug=True)
@@ -139,8 +140,11 @@ class Motor(MQTT_Module_Interface):
         self.right_Upper_Wheel(duty3)
         self.right_Lower_Wheel(duty4)
         print("New duty cycle: ", duty1, duty2, duty3, duty4)
+        thread = threading.Thread(target=self.publish)
+        thread.start()
+
+    def publish(self):
         self.comm_handler.publish(self.sender, self.getMessage())
-        self.comm_handler.wait_for_publish()
 
     def getMotorModel(self):
         return self.FrontRightWheelDuty, self.FrontLeftWheelDuty, self.BackRightWheelDuty, self.BackLeftWheelDuty
