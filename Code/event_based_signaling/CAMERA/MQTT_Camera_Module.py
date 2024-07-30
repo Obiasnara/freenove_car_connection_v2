@@ -27,7 +27,7 @@ class Camera(MQTT_Module_Interface):
 
         
         self.output = FfmpegOutput(f"-f flv {rtmp_url}")  
-        self.output2 = FfmpegOutput(f"-f mpegts udp://138.250.145.156:5000")
+        self.output2 = FfmpegOutput(f"-f mpegts udp://138.250.145.200:5000")
         
         self.encoder = H264Encoder()
         self.start_streaming()
