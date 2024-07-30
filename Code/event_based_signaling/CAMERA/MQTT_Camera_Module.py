@@ -11,10 +11,6 @@ rtmp_url = "rtmp://157.245.38.231/live/stream1"
 hls_url = "https://157.245.38.231/hls/stream1.m3u8"
 class Camera(MQTT_Module_Interface):
     def __init__(self, comm_handler): 
-        self.comm_handler = comm_handler
-        self.sender = "measurement_value/get_Measurement_Value_Video_Values"
-        self.getMessages()
-
         self.camera = Picamera2()
         self.video_config = self.camera.create_video_configuration()
         self.camera.configure(self.video_config)
@@ -23,6 +19,12 @@ class Camera(MQTT_Module_Interface):
                                             0x8915,
                                             struct.pack('256s', b'wlan0'[:15])
                                             )[20:24])
+        
+        self.comm_handler = comm_handler
+        self.sender = "measurement_value/get_Measurement_Value_Video_Values"
+        self.getMessages()
+
+        
         self.output = FfmpegOutput(f"-f flv {rtmp_url}")  
         self.output2 = FfmpegOutput('-f', 'rawvideo',
         '-vcodec', 'rawvideo',
