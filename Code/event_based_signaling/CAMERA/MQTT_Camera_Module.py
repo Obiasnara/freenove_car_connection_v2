@@ -7,6 +7,8 @@ import fcntl
 import struct
 import socket
 from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
+import imagezmq
+
 
 rtmp_url = "rtmp://157.245.38.231/live/stream1"
 hls_url = "https://157.245.38.231/hls/stream1.m3u8"
@@ -26,17 +28,23 @@ class Camera(MQTT_Module_Interface):
         self.getMessages()
 
         
-        self.output = FfmpegOutput(f"-f flv {rtmp_url}")  
+        # self.output = FfmpegOutput(f"-f flv {rtmp_url}")  
         #self.output2 = FfmpegOutput(f"-f mpegts udp://138.250.145.156:5000 -preset ultrafast -tune zerolatency -x264-params keyint=15:scenecut=0 -fflags nobuffer -probesize 32 -payload_type 96")
-        self.output2 = FfmpegOutput(f"-f mpegts -c:v libx264 -b:v 500k -r 30 udp://138.250.145.156:5000 -preset ultrafast -tune zerolatency -x264-params keyint=15:scenecut=0 -fflags nobuffer -probesize 32 -pkt_size 1316 -payload_type 96")  
 
-        self.encoder = H264Encoder()
-        self.encoder.output = [self.output, self.output2]
-        self.start_streaming()
+        self.sender = imagezmq.ImageSender(connect_to='tcp://138.250.145.156:5000')
+        self.rpi_name = socket.gethostname() # send RPi hostname with each image
+
+        # self.encoder = H264Encoder()
+        # self.encoder.output = self.output
+        # self.start_streaming()
 
     def start_streaming(self):
-        self.camera.start_encoder(self.encoder)
-        self.camera.start()
+        # self.camera.start_encoder(self.encoder)
+        # self.camera.start()
+
+        while True:
+            image = self.camera.capture_array()
+            self.sender.send_image(self.rpi_name, image)
     
     def stop_streaming(self):
         self.camera.stop_recording()
