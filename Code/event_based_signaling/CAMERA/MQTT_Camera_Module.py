@@ -3,6 +3,7 @@ from picamera2.encoders import H264Encoder
 from picamera2.outputs import FfmpegOutput
 import threading
 import time
+import fcntl
 import socket
 from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 
