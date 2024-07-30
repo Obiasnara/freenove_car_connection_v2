@@ -27,22 +27,8 @@ class Camera(MQTT_Module_Interface):
 
         
         self.output = FfmpegOutput(f"-f flv {rtmp_url}")  
-        self.output2 = FfmpegOutput('-f', 'rawvideo',
-        '-vcodec', 'rawvideo',
-        '-pix_fmt', 'bgr24',  # Assuming BGR color format (common for OpenCV)
-        '-s', f'640x480',
-        '-r', '60',            # Frames per second (adjust if needed)
-        '-i', '-',             # Input from stdin (pipe)
-        '-c:v', 'libx264',     # H.264 codec 
-        '-preset', 'ultrafast',  # Encoding speed priority
-        '-tune', 'zerolatency', # Optimize for real-time/low latency
-        '-x264-params', 'keyint=15:scenecut=0',  # Force keyframes every 15 frames & disable scenecut detection
-        '-fflags', 'nobuffer', # Minimize buffering
-        '-probesize', '32',    # Minimum probe size for faster start
-        '-payload_type', '96',  # Set custom payload type (optional)
-        '-f', 'mpegts',       
-        f'udp://138.250.145.156')  # Output to UDP address
-
+        self.output2 = FfmpegOutput(f"-f mpegts udp://138.250.145.156:5000")
+        
         self.encoder = H264Encoder()
         self.start_streaming()
 
