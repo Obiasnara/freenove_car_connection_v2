@@ -25,9 +25,9 @@ class Ultrasonic(MQTT_Module_Interface):
         def message_loop():  # Function to run in a separate thread
             while True:
                 distance = self.get_distance()  # Get distance using your existing function
-                if distance != self.distance_temp & distance > 0:
+                if distance != self.distance_temp and distance > 0:
                     self.distance_temp = distance
-                    self.comm_handler.publish(self.sender, {"Distance": distance})  # Publish the distance to the topic "MotorProducer"
+                    self.comm_handler.publish(self.sender, {"Distance": distance})  # Publish the distance to the topic
                 time.sleep(1)  # Sleep only within this thread
         
         thread = threading.Thread(target=message_loop)  
