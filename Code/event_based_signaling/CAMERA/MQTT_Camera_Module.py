@@ -20,7 +20,7 @@ class Camera(MQTT_Module_Interface):
                                             0x8915,
                                             struct.pack('256s', b'wlan0'[:15])
                                             )[20:24])
-        
+        print("IP Address: ", self.ip_adress)
         self.comm_handler = comm_handler
         self.sender = "measurement_value/get_Measurement_Value_Video_Values"
         self.getMessages()
