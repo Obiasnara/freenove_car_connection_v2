@@ -4,6 +4,7 @@ from picamera2.outputs import FfmpegOutput
 import threading
 import time
 import fcntl
+import struct
 import socket
 from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 
