@@ -41,9 +41,12 @@ class Camera(MQTT_Module_Interface):
         self.camera.start()
         def stream_loop():
             while self.stream:
-                image = self.camera.capture_array()
-                self.imageSender.send_image(self.hostName, image)
-                print("Image sent")
+                if self.imageSender is not None:
+                    image = self.camera.capture_array()
+                    self.imageSender.send_image(self.hostName, image)
+                    print("Image sent")
+                else:
+                    print("ImageSender is None")
         thread = threading.Thread(target=stream_loop)
         thread.start()
     
@@ -66,6 +69,9 @@ class Camera(MQTT_Module_Interface):
             self.start_streaming()
         else:
             self.stream = False
+            self.imageSender.close()
+            self.imageSender = None
+
             
 
     def getMessages(self):
