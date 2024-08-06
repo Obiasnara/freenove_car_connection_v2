@@ -13,4 +13,5 @@ picam.start()
 time.sleep(2)  # allow camera sensor to warm up
 while True:  # send images as stream until Ctrl-C
     image = picam.capture_array()
+    print("Sending image...")
     sender.send_image(rpi_name, image)
