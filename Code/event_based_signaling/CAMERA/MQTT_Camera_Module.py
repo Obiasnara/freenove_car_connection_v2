@@ -51,16 +51,12 @@ class Camera(MQTT_Module_Interface):
     def stop_streaming(self):
         self.camera.stop_recording()
 
-    def on_message(self, client, userdata, message):
-        # We recieve a message of this type {"videoIPadress":"138.250.145.156","videoPort":5000}
-        print("Message recieved: ", message.payload)
-        message = message.payload.decode("utf-8")
-        # Extract the IP address and the port
-        ip_adress = message["videoIPadress"]
-        port = message["videoPort"]
+    def setUp(self, ip, port):
+        self.ip_adress = ip
+        self.port = port
         # Connect to the new IP adress and port
-        if ip_adress != "0.0.0.0" and port != -1:
-            self.imageSender = imagezmq.ImageSender(connect_to='tcp://'+ip_adress+':'+port)
+        if self.ip_adress != "0.0.0.0" and self.port != -1:
+            self.imageSender = imagezmq.ImageSender(connect_to='tcp://'+self.ip_adress+':'+self.port)
             self.stream = True
         else:
             self.stream = False
