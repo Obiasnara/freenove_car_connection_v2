@@ -32,19 +32,18 @@ class Camera(MQTT_Module_Interface):
         self.output = FfmpegOutput(f"-f flv {rtmp_url}")  
         #self.output2 = FfmpegOutput(f"-f mpegts udp://138.250.145.156:5000 -preset ultrafast -tune zerolatency -x264-params keyint=15:scenecut=0 -fflags nobuffer -probesize 32 -payload_type 96")
 
-        self.imageSender = imagezmq.ImageSender(connect_to='tcp://138.250.145.156:5000')
         self.encoder = H264Encoder()
         self.encoder.output = self.output
-        self.start_streaming()
+        
 
     def start_streaming(self):
         self.camera.start_encoder(self.encoder)
         self.camera.start()
         def stream_loop():
-            time.sleep(2)
             while self.stream:
                 image = self.camera.capture_array()
                 self.imageSender.send_image(self.hostName, image)
+                print("Image sent")
         thread = threading.Thread(target=stream_loop)
         thread.start()
     
@@ -64,6 +63,7 @@ class Camera(MQTT_Module_Interface):
                 self.imageSender.close()
                 self.imageSender = imagezmq.ImageSender(connect_to='tcp://'+str(self.ip_adress)+':'+str(self.port))
             self.stream = True
+            self.start_streaming()
         else:
             self.stream = False
             
