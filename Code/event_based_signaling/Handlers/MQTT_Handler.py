@@ -29,7 +29,7 @@ class MQTTHandler(HandlerInterface):
 
 
     def setElements(self, elements):
-        self.elements = elements
+        self.elements = {element.__class__.__name__: element for element in elements}
         print(f"Elements set: {self.elements}")
 
     def getElement(self, element_name):
