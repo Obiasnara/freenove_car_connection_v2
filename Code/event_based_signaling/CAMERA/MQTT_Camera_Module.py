@@ -31,7 +31,7 @@ class Camera(MQTT_Module_Interface):
         
         self.output = FfmpegOutput(f"-f flv {rtmp_url}")  
         #self.output2 = FfmpegOutput(f"-f mpegts udp://138.250.145.156:5000 -preset ultrafast -tune zerolatency -x264-params keyint=15:scenecut=0 -fflags nobuffer -probesize 32 -payload_type 96")
-
+        self.imageSender = None
         self.encoder = H264Encoder()
         self.encoder.output = self.output
         
