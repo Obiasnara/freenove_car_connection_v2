@@ -32,6 +32,9 @@ class MQTTHandler(HandlerInterface):
         self.elements = elements
         print(f"Elements set: {self.elements}")
 
+    def getElement(self, element_name):
+        return self.elements.get(element_name)
+
     def on_message(self, client, userdata, message):
         print(f"Received message '{message.payload.decode()}' on topic '{message.topic}'")
 
@@ -40,7 +43,7 @@ class MQTTHandler(HandlerInterface):
 
             # Action Dictionary (Mapping topics to functions)
             actions = {
-                "measurement_value/Engines_Values_ChangeRotationSpeeds": lambda: self.elements["Motor"].setMotorModel(
+                "measurement_value/Engines_Values_ChangeRotationSpeeds": lambda: self.getElement("Motor").setMotorModel(
                     data.get("FrontLeftWheelDuty"),
                     data.get("BackLeftWheelDuty"),
                     data.get("FrontRightWheelDuty"),
