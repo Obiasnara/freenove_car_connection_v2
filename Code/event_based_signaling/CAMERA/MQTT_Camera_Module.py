@@ -44,7 +44,6 @@ class Camera(MQTT_Module_Interface):
                 if self.imageSender is not None:
                     image = self.camera.capture_array()
                     self.imageSender.send_image(self.hostName, image)
-                    print("Image sent")
                 else:
                     print("ImageSender is None")
         thread = threading.Thread(target=stream_loop)
