@@ -18,11 +18,6 @@ class Camera(MQTT_Module_Interface):
         # Set the video configuration
         self.video_config = self.camera.create_video_configuration()
         self.camera.configure(self.video_config)
-        self.controls = {
-            "AfMode": controls.AfMode.CONTINUOUS,
-        }
-        self.camera.setControls(controls)
-
 
         self.hostName = socket.gethostname()
         print("IP Address: ", self.hostName)
