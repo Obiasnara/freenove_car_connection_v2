@@ -8,16 +8,22 @@ import struct
 import socket
 from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 import imagezmq
-
+from libcamera import controls
 
 rtmp_url = "rtmp://157.245.38.231/live/stream1"
 hls_url = "https://157.245.38.231/hls/stream1.m3u8"
 class Camera(MQTT_Module_Interface):
     def __init__(self, comm_handler): 
         self.camera = Picamera2()
+        # Set the video configuration
         self.video_config = self.camera.create_video_configuration()
         self.camera.configure(self.video_config)
-        
+        self.controls = {
+            "AfMode": controls.AfMode.Continuous,
+        }
+        self.camera.setControls(controls)
+
+
         self.hostName = socket.gethostname()
         print("IP Address: ", self.hostName)
 
@@ -28,7 +34,6 @@ class Camera(MQTT_Module_Interface):
         self.stream = False
         self.getMessages()
 
-        
         self.output = FfmpegOutput(f"-f flv {rtmp_url}")  
         #self.output2 = FfmpegOutput(f"-f mpegts udp://138.250.145.156:5000 -preset ultrafast -tune zerolatency -x264-params keyint=15:scenecut=0 -fflags nobuffer -probesize 32 -payload_type 96")
         self.imageSender = None
