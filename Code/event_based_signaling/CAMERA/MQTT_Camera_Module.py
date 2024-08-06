@@ -20,7 +20,6 @@ class Camera(MQTT_Module_Interface):
         self.camera.configure(self.video_config)
         self.camera.resolution = (640, 480)
         self.camera.framerate = 60
-        self.camera.set_controls({"AfMode":controls.AfModeEnum.Continuous})
         self.hostName = socket.gethostname()
         print("IP Address: ", self.hostName)
 
