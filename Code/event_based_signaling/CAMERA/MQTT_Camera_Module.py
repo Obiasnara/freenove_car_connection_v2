@@ -35,11 +35,10 @@ class Camera(MQTT_Module_Interface):
         self.imageSender = None
         self.encoder = H264Encoder()
         self.encoder.output = self.output
-        
-
-    def start_streaming(self):
         self.camera.start_encoder(self.encoder)
         self.camera.start()
+
+    def start_streaming(self):
         def stream_loop():
             while self.stream:
                 if self.imageSender is not None:
