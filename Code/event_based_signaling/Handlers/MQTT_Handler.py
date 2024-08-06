@@ -50,8 +50,8 @@ class MQTTHandler(HandlerInterface):
                     data.get("BackRightWheelDuty"),
                 ),
                 "measurement_value/Video_Values_StartVideoStream": lambda: self.getElement("Camera").setUp(
-                    data.get("ip_adress"),
-                    data.get("port"),
+                    data.get("videoIPaddress"),
+                    data.get("videoPort"),
                 ),
                 # Add more actions for other topics here...
             }
