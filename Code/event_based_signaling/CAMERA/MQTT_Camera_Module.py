@@ -54,9 +54,11 @@ class Camera(MQTT_Module_Interface):
     def setUp(self, ip, port):
         self.ip_adress = ip
         self.port = port
+        print("IP: ", self.ip_adress)
+        print("Port: ", self.port)
         # Connect to the new IP adress and port
         if self.ip_adress != "0.0.0.0" and self.port != -1:
-            self.imageSender = imagezmq.ImageSender(connect_to='tcp://'+self.ip_adress+':'+self.port)
+            self.imageSender = imagezmq.ImageSender(connect_to='tcp://'+str(self.ip_adress)+':'+str(self.port))
             self.stream = True
         else:
             self.stream = False
