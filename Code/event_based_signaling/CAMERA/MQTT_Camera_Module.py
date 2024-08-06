@@ -19,7 +19,7 @@ class Camera(MQTT_Module_Interface):
         self.video_config = self.camera.create_video_configuration()
         self.camera.configure(self.video_config)
         self.controls = {
-            "AfMode": controls.AfMode.Continuous,
+            "AfMode": controls.AfMode.CONTINUOUS,
         }
         self.camera.setControls(controls)
 
