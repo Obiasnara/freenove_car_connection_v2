@@ -17,47 +17,61 @@ class Camera(MQTT_Module_Interface):
         self.camera = Picamera2()
         self.video_config = self.camera.create_video_configuration()
         self.camera.configure(self.video_config)
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.ip_adress = socket.inet_ntoa(fcntl.ioctl(s.fileno(),
-                                            0x8915,
-                                            struct.pack('256s', b'wlan0'[:15])
-                                            )[20:24])
-        print("IP Address: ", self.ip_adress)
+        
+        self.hostName = socket.gethostname()
+        print("IP Address: ", self.hostName)
+
         self.comm_handler = comm_handler
         self.sender = "measurement_value/get_Measurement_Value_Video_Values"
+        self.receiver = "measurement_value/Video_Values_StartVideoStream"
+        self.comm_handler.subscribe(self.receiver, self.on_message)
+        self.stream = False
         self.getMessages()
 
         
-        # self.output = FfmpegOutput(f"-f flv {rtmp_url}")  
+        self.output = FfmpegOutput(f"-f flv {rtmp_url}")  
         #self.output2 = FfmpegOutput(f"-f mpegts udp://138.250.145.156:5000 -preset ultrafast -tune zerolatency -x264-params keyint=15:scenecut=0 -fflags nobuffer -probesize 32 -payload_type 96")
 
-        self.sender = imagezmq.ImageSender(connect_to='tcp://138.250.145.156:5000')
-        self.rpi_name = socket.gethostname() # send RPi hostname with each image
-
-        # self.encoder = H264Encoder()
-        # self.encoder.output = self.output
-        # self.start_streaming()
+        self.imageSender = imagezmq.ImageSender(connect_to='tcp://138.250.145.156:5000')
+        self.encoder = H264Encoder()
+        self.encoder.output = self.output
+        self.start_streaming()
 
     def start_streaming(self):
-        # self.camera.start_encoder(self.encoder)
-        # self.camera.start()
-
-        while True:
-            image = self.camera.capture_array()
-            self.sender.send_image(self.rpi_name, image)
+        self.camera.start_encoder(self.encoder)
+        self.camera.start()
+        def stream_loop():
+            time.sleep(2)
+            while self.stream:
+                image = self.camera.capture_array()
+                self.imageSender.send_image(self.hostName, image)
+        thread = threading.Thread(target=stream_loop)
+        thread.start()
     
     def stop_streaming(self):
         self.camera.stop_recording()
 
     def on_message(self, client, userdata, message):
-        pass
+        # We recieve a message of this type {"videoIPadress":"138.250.145.156","videoPort":5000}
+        print("Message recieved: ", message.payload)
+        message = message.payload.decode("utf-8")
+        # Extract the IP address and the port
+        ip_adress = message["videoIPadress"]
+        port = message["videoPort"]
+        # Connect to the new IP adress and port
+        if ip_adress != "0.0.0.0" and port != -1:
+            self.imageSender = imagezmq.ImageSender(connect_to='tcp://'+ip_adress+':'+port)
+            self.stream = True
+        else:
+            self.stream = False
+            
 
     def getMessages(self):
         def message_loop():  # This function will run in its own thread
             while True:
                 self.comm_handler.publish(self.sender, {
                     "Video_HLS_Url": hls_url,
-                    "Car_IP_Address": self.ip_adress
+                    "Car_IP_Address": self.hostName
                 })
                 time.sleep(1)  # Sleep within this thread only
         thread = threading.Thread(target=message_loop)
