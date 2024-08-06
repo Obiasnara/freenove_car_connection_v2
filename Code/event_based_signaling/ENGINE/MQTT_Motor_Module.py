@@ -14,42 +14,10 @@ class Motor(MQTT_Module_Interface):
         
         # We need to create a MQTTHandler object to subscribe to the topic "MotorProducer"
         self.comm_handler = comm_handler
-        self.comm_handler.subscribe("measurement_value/Engines_Values_ChangeRotationSpeeds", self.on_message)        
-        
+        self.comm_handler.subscribe("measurement_value/Engines_Values_ChangeRotationSpeeds")        
         self.sender = "measurement_value/get_Measurement_Value_Engines_Values"
         self.comm_handler.publish(self.sender, self.getMessage())
         self.comm_handler.wait_for_publish()
-
-    def on_message(self, client, userdata, message):
-        print(f"Received message '{message.payload.decode()}' on topic '{message.topic}'")
-
-        try:
-            data = json.loads(message.payload.decode())
-
-            # Action Dictionary (Mapping topics to functions)
-            actions = {
-                "measurement_value/Engines_Values_ChangeRotationSpeeds": lambda: self.setMotorModel(
-                    data.get("FrontLeftWheelDuty"),
-                    data.get("BackLeftWheelDuty"),
-                    data.get("FrontRightWheelDuty"),
-                    data.get("BackRightWheelDuty"),
-                ),
-                # Add more actions for other topics here...
-            }
-
-            # Execute Action Based on Topic
-            action_function = actions.get(message.topic)
-            if action_function:
-                action_function()
-            else:
-                print(f"No action defined for topic: {message.topic}")
-
-        except json.JSONDecodeError as e:
-            print(f"Error decoding JSON message: {e}")
-
-        except KeyError as e:
-            print(f"Missing key in JSON message for topic '{message.topic}': {e}")
-
 
     def getMessage(self):
         data = {

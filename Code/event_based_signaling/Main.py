@@ -8,12 +8,14 @@ from CPU.MQTT_CPU_Module import CPU
 from CAMERA.MQTT_Camera_Module import Camera
 
 MQTT_BROKER_ADDRESS = "157.245.38.231"
+
 mqtt_handler = MQTTHandler(MQTT_BROKER_ADDRESS, client_id="car_module")
 motor = Motor(mqtt_handler)
 battery = Battery(mqtt_handler)
 ultrasonic = Ultrasonic(mqtt_handler)
 cpu = CPU(mqtt_handler)
 camera = Camera(mqtt_handler)
+mqtt_handler.setElements([motor, battery, ultrasonic, cpu, camera])
 
 def loop():
     while True:
