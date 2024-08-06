@@ -14,8 +14,8 @@ class Motor(MQTT_Module_Interface):
         
         # We need to create a MQTTHandler object to subscribe to the topic "MotorProducer"
         self.comm_handler = comm_handler
-        self.comm_handler.subscribe("measurement_value/Engines_Values_ChangeRotationSpeeds")        
-        self.comm_handler.client.on_message = self.on_message
+        self.comm_handler.subscribe("measurement_value/Engines_Values_ChangeRotationSpeeds", self.on_message)        
+        
         self.sender = "measurement_value/get_Measurement_Value_Engines_Values"
         self.comm_handler.publish(self.sender, self.getMessage())
         self.comm_handler.wait_for_publish()
