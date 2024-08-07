@@ -18,8 +18,8 @@ class Camera(MQTT_Module_Interface):
         # Set the video configuration
         self.video_config = self.camera.create_video_configuration()
         self.camera.configure(self.video_config)
-        self.camera.resolution = (640, 480)
-        self.camera.framerate = 60
+        #self.camera.resolution = (640, 480)
+        #self.camera.framerate = 60
         self.hostName = socket.gethostname()
 
         self.comm_handler = comm_handler
