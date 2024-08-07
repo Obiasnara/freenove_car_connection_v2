@@ -16,9 +16,8 @@ class Camera(MQTT_Module_Interface):
     def __init__(self, comm_handler): 
         self.camera = Picamera2()
         # Set the video configuration
-        self.video_config = self.camera.create_video_configuration()
+        self.video_config = self.camera.create_video_configuration(main={"size": (640, 480)})
         self.camera.configure(self.video_config)
-        self.camera.resolution = (640, 480)
         
         self.hostName = socket.gethostname()
 
