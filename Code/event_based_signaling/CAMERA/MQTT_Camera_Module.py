@@ -21,7 +21,6 @@ class Camera(MQTT_Module_Interface):
         self.camera.resolution = (640, 480)
         self.camera.framerate = 60
         self.hostName = socket.gethostname()
-        print("IP Address: ", socket.gethostbyname(self.hostName))
 
         self.comm_handler = comm_handler
         self.sender = "measurement_value/get_Measurement_Value_Video_Values"
@@ -42,6 +41,7 @@ class Camera(MQTT_Module_Interface):
             while self.stream:
                 if self.imageSender is not None:
                     image = self.camera.capture_array()
+                    print(image)
                     self.imageSender.send_image(self.hostName, image)
                 else:
                     print("ImageSender is None")
