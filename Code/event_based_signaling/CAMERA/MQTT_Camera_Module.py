@@ -42,6 +42,7 @@ class Camera(MQTT_Module_Interface):
             while self.stream:
                 if self.imageSender is not None:
                     image = self.camera.capture_array()
+                    print("Sending Image")
                     self.imageSender.send_image(self.hostName, image)
                 else:
                     print("ImageSender is None")
