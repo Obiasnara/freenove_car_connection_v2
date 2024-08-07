@@ -35,7 +35,6 @@ class Camera(MQTT_Module_Interface):
         self.imageSender = None
         self.encoder = H264Encoder()
         self.encoder.output = self.output
-        self.camera.start()
         self.camera.start_recording(self.encoder, self.output)
 
     def start_streaming(self):
