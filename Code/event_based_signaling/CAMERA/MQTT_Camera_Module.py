@@ -10,8 +10,8 @@ from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 import imagezmq
 from libcamera import controls
 
-rtmp_url = "rtmp://157.245.38.231/live/stream1"
-hls_url = "https://157.245.38.231/hls/stream1.m3u8"
+rtmp_url = "rtmp://134.122.99.178/live/stream1"
+hls_url = "https://134.122.99.178/hls/stream1.m3u8"
 class Camera(MQTT_Module_Interface):
     def __init__(self, comm_handler): 
         self.camera = Picamera2()

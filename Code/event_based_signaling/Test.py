@@ -3,7 +3,7 @@ import InitPythonPath as InitPythonPath
 from Handlers.MQTT_Handler import MQTTHandler
 from ENGINE.MQTT_Motor_Module import Motor
 
-MQTT_BROKER_ADDRESS = "157.245.38.231"
+MQTT_BROKER_ADDRESS = "134.122.99.178"
 mqtt_handler = MQTTHandler(MQTT_BROKER_ADDRESS, client_id="car_motor_module")
 motor = Motor(mqtt_handler)
 

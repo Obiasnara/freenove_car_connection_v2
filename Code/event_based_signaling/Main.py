@@ -7,7 +7,7 @@ from ULTRASONIC.MQTT_Ultrasonic_Module import Ultrasonic
 from CPU.MQTT_CPU_Module import CPU
 from CAMERA.MQTT_Camera_Module import Camera
 
-MQTT_BROKER_ADDRESS = "157.245.38.231"
+MQTT_BROKER_ADDRESS = "134.122.99.178"
 
 mqtt_handler = MQTTHandler(MQTT_BROKER_ADDRESS, client_id="car_module")
 motor = Motor(mqtt_handler)
