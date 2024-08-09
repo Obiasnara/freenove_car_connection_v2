@@ -1,10 +1,12 @@
 import time
-
 import smbus
+import threading
+
+from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 
 
-class Adc:
-    def __init__(self):
+class Battery(MQTT_Module_Interface):
+    def __init__(self, comm_handler):
         # Get I2C bus
         self.bus = smbus.SMBus(1)
 
@@ -16,13 +18,45 @@ class Adc:
 
         # ADS7830 Command 
         self.ADS7830_CMD = 0x84  # Single-Ended Inputs
-
         for i in range(3):
             aa = self.bus.read_byte_data(self.ADDRESS, 0xf4)
             if aa < 150:
                 self.Index = "PCF8591"
             else:
                 self.Index = "ADS7830"
+
+         # We need to create a MQTTHandler object to subscribe to the topic "MotorProducer"
+        self.comm_handler = comm_handler
+        self.sender = "measurement_value/get_Measurement_Value_Battery_Values"
+
+        self.Left_IDR_temp = 0
+        self.Right_IDR_temp = 0
+        self.Power_temp = 0
+
+        self.getMessage()
+
+    def getMessage(self):
+        def message_loop():  # This function will run in its own thread
+            while True:
+                Left_IDR = self.recvADC(0)
+                Right_IDR = self.recvADC(1)
+                Power = self.recvADC(2) * 3
+                if Left_IDR != self.Left_IDR_temp or Right_IDR != self.Right_IDR_temp or Power != self.Power_temp:
+                    self.Left_IDR_temp = Left_IDR
+                    self.Right_IDR_temp = Right_IDR
+                    self.Power_temp = Power
+                    self.comm_handler.publish(self.sender, {"Left_IDR": Left_IDR, "Right_IDR": Right_IDR, "Power": Power})
+                time.sleep(1)  # Sleep within this thread only
+
+        thread = threading.Thread(target=message_loop)
+        thread.start()  # Start the thread
+
+    def on_message(self, client, userdata, message):
+        pass
+
+    def destroy(self):
+        self.i2cClose()
+        self.mqtt_handler.stop()
 
     def analogReadPCF8591(self, chn):  # PCF8591 read ADC value,chn:0,1,2,3
         value = [0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -66,29 +100,3 @@ class Adc:
 
     def i2cClose(self):
         self.bus.close()
-
-
-def loop():
-    adc = Adc()
-    while True:
-        Left_IDR = adc.recvADC(0)
-        print(Left_IDR)
-        Right_IDR = adc.recvADC(1)
-        print(Right_IDR)
-        Power = adc.recvADC(2) * 3
-        print(Power)
-        time.sleep(1)
-        print('----')
-
-
-def destroy():
-    pass
-
-
-# Main program logic follows:
-if __name__ == '__main__':
-    print('Program is starting ... ')
-    try:
-        loop()
-    except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the child program destroy() will be  executed.
-        destroy()

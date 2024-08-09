@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./Code/event_based_signaling/ENGINE"
+    ]
+}

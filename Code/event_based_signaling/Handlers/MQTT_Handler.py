@@ -1,8 +1,10 @@
 import time
 import json
 import paho.mqtt.client as mqtt
+from Interfaces.Handler_Interface import HandlerInterface
 
-class MQTTHandler:
+class MQTTHandler(HandlerInterface):
+    
     def __init__(self, broker_address="localhost", client_id="", qos=1):
         self.broker_address = broker_address
         self.client_id = client_id
@@ -16,6 +18,7 @@ class MQTTHandler:
         self.client.on_connect = self.on_connect
         self.client.on_subscribe = self.on_subscribe
         self.client.on_unsubscribe = self.on_unsubscribe
+        self.client.on_message = self.on_message
         self.client.loop_start()
 
     def on_publish(self, client, userdata, mid, reason_code, properties):
@@ -23,6 +26,46 @@ class MQTTHandler:
             userdata.remove(mid)
         except KeyError:
             print("on_publish() is called with a mid not present in unacked_publish")
+
+
+    def setElements(self, elements):
+        self.elements = {element.__class__.__name__: element for element in elements}
+        print(f"Elements set: {self.elements}")
+
+    def getElement(self, element_name):
+        return self.elements.get(element_name)
+
+    def on_message(self, client, userdata, message):
+        print(f"Received message '{message.payload.decode()}' on topic '{message.topic}'")
+
+        try:
+            data = json.loads(message.payload.decode())
+
+            # Action Dictionary (Mapping topics to functions)
+            actions = {
+                "measurement_value/Engines_Values_ChangeRotationSpeeds": lambda: self.getElement("Motor").setMotorModel(
+                    data.get("FrontLeftWheelDuty"),
+                    data.get("BackLeftWheelDuty"),
+                    data.get("FrontRightWheelDuty"),
+                    data.get("BackRightWheelDuty"),
+                ),
+                "measurement_value/Video_Values_StartVideoStream": lambda: self.getElement("Camera").setUp(
+                    data.get("videoIPadress"),
+                    data.get("videoPort"),
+                ),
+                # Add more actions for other topics here...
+            }
+
+            # Execute Action Based on Topic
+            action_function = actions.get(message.topic)
+            if action_function:
+                action_function()
+            
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON message: {e}")
+
+        except KeyError as e:
+            print(f"Missing key in JSON message for topic '{message.topic}': {e}")
 
   
     def on_subscribe(self, client, userdata, mid, reason_code_list, properties):

@@ -1,19 +1,33 @@
-import InitPythonPath
+import InitPythonPath as InitPythonPath
 
-from MQTT_Handler import MQTTHandler
-from MQTT_Motor_Module import Motor
+from Handlers.MQTT_Handler import MQTTHandler
+from ENGINE.MQTT_Motor_Module import Motor
+from BATTERY.MQTT_Battery_Module import Battery
+from ULTRASONIC.MQTT_Ultrasonic_Module import Ultrasonic
+from CPU.MQTT_CPU_Module import CPU
+from CAMERA.MQTT_Camera_Module import Camera
 
-MQTT_BROKER_ADDRESS = "157.245.38.231"
-mqtt_handler = MQTTHandler(MQTT_BROKER_ADDRESS, client_id="car_motor_module")
+MQTT_BROKER_ADDRESS = "134.122.99.178"
+
+mqtt_handler = MQTTHandler(MQTT_BROKER_ADDRESS, client_id="car_module")
 motor = Motor(mqtt_handler)
+battery = Battery(mqtt_handler)
+ultrasonic = Ultrasonic(mqtt_handler)
+cpu = CPU(mqtt_handler)
+camera = Camera(mqtt_handler)
+mqtt_handler.setElements([motor, battery, ultrasonic, cpu, camera])
 
 def loop():
     while True:
         pass
 
 def destroy():
-    motor.setMotorModel(0, 0, 0, 0)
-    motor.mqtt_handler.stop()
+    motor.destroy()
+    battery.destroy()
+    ultrasonic.destroy()
+    cpu.destroy()
+    camera.destroy()
+    mqtt_handler.stop()
 
 if __name__ == '__main__':
     try:

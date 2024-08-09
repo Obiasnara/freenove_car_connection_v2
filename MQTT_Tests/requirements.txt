@@ -1,4 +1,0 @@
-paho-mqtt
-asyncio
-websockets
-aiortc

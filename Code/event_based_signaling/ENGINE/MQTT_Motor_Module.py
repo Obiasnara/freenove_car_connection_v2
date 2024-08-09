@@ -1,8 +1,9 @@
-from car_utilities.PCA9685 import *
+from ENGINE.PCA9685 import *
+from Interfaces.MQTT_Module_Interface import MQTT_Module_Interface
 import json
-
-class Motor:
-    def __init__(self, mqtt_handler):
+import threading
+class Motor(MQTT_Module_Interface):
+    def __init__(self, comm_handler):
         self.pwm = PCA9685(0x40, debug=True)
         self.pwm.setPWMFreq(50)
 
@@ -10,24 +11,26 @@ class Motor:
         self.FrontLeftWheelDuty = 0
         self.BackRightWheelDuty = 0
         self.BackLeftWheelDuty = 0
-        data = {
-            "LeftUpperMotorSpeed": 0,
-            "RightUpperMotorSpeed": 0,
-            "LeftLowerMotorSpeed": 0,
-            "RightLowerMotorSpeed": 0
-        }
+        
         # We need to create a MQTTHandler object to subscribe to the topic "MotorProducer"
-        self.mqtt_handler = mqtt_handler
-        self.mqtt_handler.subscribe("MotorProducer")        
-        self.mqtt_handler.client.on_message = self.on_message
+        self.comm_handler = comm_handler
+        self.comm_handler.subscribe("measurement_value/Engines_Values_ChangeRotationSpeeds")        
+        self.sender = "measurement_value/get_Measurement_Value_Engines_Values"
+        self.comm_handler.publish(self.sender, self.getMessage())
+        self.comm_handler.wait_for_publish()
 
-        self.mqtt_handler.publish("MotorClient", self.getMessage())
-        self.mqtt_handler.wait_for_publish()
+    def getMessage(self):
+        data = {
+            "FrontRightWheelDuty": self.FrontRightWheelDuty,
+            "FrontLeftWheelDuty": self.FrontLeftWheelDuty,
+            "BackRightWheelDuty": self.BackRightWheelDuty,
+            "BackLeftWheelDuty": self.BackLeftWheelDuty
+        }
+        return data
 
-    def on_message(self, client, userdata, message):
-        data = json.loads(message.payload)
-        print(data)
-        self.setMotorModel(data["LeftUpperMotorSpeed"], data["RightUpperMotorSpeed"], data["LeftLowerMotorSpeed"], data["RightLowerMotorSpeed"])
+    def destroy(self):
+        self.setMotorModel(0, 0, 0, 0)
+        self.comm_handler.stop()
 
     def duty_range(self, duty1, duty2, duty3, duty4):
         if duty1 > 4095:
@@ -105,17 +108,11 @@ class Motor:
         self.right_Upper_Wheel(duty3)
         self.right_Lower_Wheel(duty4)
         print("New duty cycle: ", duty1, duty2, duty3, duty4)
-        self.mqtt_handler.publish("MotorClient", self.getMessage())
-        self.mqtt_handler.wait_for_publish()
+        thread = threading.Thread(target=self.publish)
+        thread.start()
 
-    def getMessage(self):
-        data = {
-            "LeftUpperMotorSpeed": self.FrontLeftWheelDuty,
-            "RightUpperMotorSpeed": self.FrontRightWheelDuty,
-            "LeftLowerMotorSpeed": self.BackLeftWheelDuty,
-            "RightLowerMotorSpeed": self.BackRightWheelDuty
-        }
-        return data
+    def publish(self):
+        self.comm_handler.publish(self.sender, self.getMessage())
 
     def getMotorModel(self):
         return self.FrontRightWheelDuty, self.FrontLeftWheelDuty, self.BackRightWheelDuty, self.BackLeftWheelDuty
